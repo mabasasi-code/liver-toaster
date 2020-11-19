@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "babel-node  -r ./node_modules/dotenv/config ./src/index.js",
+    "dev:listen": "babel-node  -r ./node_modules/dotenv/config ./src/index.js",
     "auth": "babel-node  -r ./node_modules/dotenv/config ./src/twitters/_authorize.js"
   },
   "keywords": [],
