@@ -7,10 +7,11 @@ const TITLE_SCHEDULE_PREFIX = '🔴 30 分後に '
 
 export default async function (push) {
   // youtube は暫く出力する
-  // console.log(push)
+  console.log(push)
 
   try {
     const title = push.title
+    const videoId = push.notification_tag
 
     // schedule 通知か 配信開始通知か 確認
     if (title.startsWith(TITLE_SCHEDULE_PREFIX)) {
@@ -20,11 +21,11 @@ export default async function (push) {
       if (config.youtube.channelName) {
         // チャンネル名が指定されてるなら前方一致
         if (title.startsWith(TITLE_SCHEDULE_PREFIX + config.youtube.channelName)) {
-          await pushHandling(push)
+          await videoHandling(videoId)
         }
       } else {
         // 指定されてないならとりあえず全部
-        await pushHandling(push)
+        await videoHandling(videoId)
       }
     } else if (title.startsWith(TITLE_PREFIX)) {
       // 配信開始 通知
@@ -33,11 +34,11 @@ export default async function (push) {
       if (config.youtube.channelName) {
         // チャンネル名が指定されてるなら完全一致とする
         if (title === TITLE_PREFIX + config.youtube.channelName) {
-          await pushHandling(push)
+          await videoHandling(videoId)
         }
       } else {
         // 指定されてないならとりあえず全部
-        await pushHandling(push)
+        await videoHandling(videoId)
       }
     } else {
       console.log('> other notify')
@@ -50,12 +51,12 @@ export default async function (push) {
 
 ///
 
-const pushHandling = async function (push) {
-  const videoId = push.notification_tag
+const videoHandling = async function (videoId) {
   console.log('> videoId: ' + videoId)
 
   // video を取り出して更新
   const video = await videoStore.findVideoAndUpdate(videoId)
+  console.log('> video: ' + JSON.stringify(video))
 
   if (!video) {
     // TODO: api で video が取れなかったときの処理
@@ -63,18 +64,25 @@ const pushHandling = async function (push) {
     console.log('> api fallure')
     return
   }
-  video.actualStartTime = null
 
   // 配信が始まってなくて、予定ツイをしてなさそうならする
-  if (!video.notifySchedule && !video.actualStartTime) {
-    await tweeter.scheduleStreaming(video)
-    video.notifySchedule = true
+  if (!video.actualEndTime) {
+    if (video.notifySchedule) {
+      console.log('> already schedule tweet')
+    } else {
+      await tweeter.scheduleStreaming(video)
+      video.notifySchedule = true
+    }
   }
 
   // 配信中で、開始ツイをしてなさそうならする
-  if (!video.notifyStart && video.actualStartTime && !video.actualEndTime) {
-    await tweeter.startLiveStreaming(video)
-    video.notifyStart = true
+  if (video.actualStartTime && !video.actualEndTime) {
+    if (video.notifyStart) {
+      console.log('> already start tweet')
+    } else {
+      await tweeter.startLiveStreaming(video)
+      video.notifyStart = true
+    }
   }
 
   // DB に保存する

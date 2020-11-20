@@ -16,13 +16,10 @@ pusher.me(function (error, user) {
     try {
       // stream has connected
       const user = await twitter.getClientUser()
-      const name = (user.name || '--') + '(@' + (user.screen_name || '--') + ')'
-
-      console.log('> listen ...')
-      console.log('> account: ' + name)
-      console.log()
+      showStartStatus(user)
     } catch (err) {
       console.error(err)
+      process.exit(1) // 強制終了
     }
   })
 
@@ -37,3 +34,16 @@ pusher.me(function (error, user) {
     }
   })
 })
+
+///
+
+const showStartStatus = function (user) {
+  const name = (user.name || '--') + '(@' + (user.screen_name || '--') + ')'
+  const target = config.youtube.channelName || 'all'
+
+  console.log('listen ...')
+  console.log('> account: ' + name)
+  console.log('> setup: ' + JSON.stringify(config.mode))
+  console.log('> target: ' + target)
+  console.log()
+}
