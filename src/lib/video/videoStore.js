@@ -1,5 +1,5 @@
 import nedb from 'nedb-promises'
-import youtube from './api/youtube'
+import youtube from '../api/youtube'
 
 // https://github.com/bajankristof/nedb-promises
 const Video = nedb.create({
