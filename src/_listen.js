@@ -47,9 +47,11 @@ pusher.me(function(error, user) {
     if (push.type === 'mirror') {
       try {
         if (push.package_name === 'com.pushbullet.android') {
+          console.log(push)
           await tweet(push)
         }
         if (push.package_name === 'com.google.android.youtube') {
+          console.log(push)
           await tweet(push)
         }
       } catch (error) {

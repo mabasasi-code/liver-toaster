@@ -1,6 +1,6 @@
-import prompt from '../prompt'
 import chalk from 'chalk'
 import Twitter from 'twitter-lite'
+import prompt from './lib/prompt'
 
 const TWITTER_CONSUMER_KEY = process.env.TWITTER_CONSUMER_KEY
 const TWITTER_CONSUMER_SECRET = process.env.TWITTER_CONSUMER_SECRET
