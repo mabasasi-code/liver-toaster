@@ -18,10 +18,11 @@ const getClientUser = async function () {
 // twitter で呟く
 const postTweet = async function (text) {
   // dump モードならスタブを作成
-  if (config.tweet) {
+  if (config.mode.ignoreTweet) {
     return { id: 'stub', id_str: 'stub', text: text }
   }
 
+  // つぶやく
   const tweet = await client.post('statuses/update', {
     status: text,
   });

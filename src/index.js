@@ -1,8 +1,7 @@
 import PushBullet from 'pushbullet'
-import pushDump from './lib/pushDump'
-import pushHandle from './lib/pushHandle'
-import twitter from './lib/twitters/twitter'
 import config from './config/index'
+import twitter from './lib/twitters/twitter'
+import handler from './handler/handler'
 
 // https://github.com/alexwhitman/node-pushbullet-api
 const pusher = new PushBullet(config.pushbullet.accessToken)
@@ -29,14 +28,9 @@ pusher.me(function (error, user) {
 
   stream.on('push', async function (push) {
     try {
-      // push message received
-      if (config.listenMode) {
-        pushDump(push)
-      }
-
-      if (push.type === 'mirror') {
-        if (!config.listenMode) pushDump(push) // dump してないならする
-        await pushHandle(push)
+      const type = push.type
+      if (type === 'mirror') {
+        await handler(push)
       }
     } catch (err) {
       console.error(err)

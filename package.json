@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production babel-node -r dotenv/config ./src/index.js",
-    "dev": "cross-env NODE_ENV=development babel-node -r dotenv/config ./src/index.js",
-    "test": "cross-env NODE_ENV=development babel-node -r dotenv/config ./src/test.js",
-    "dev:listen": "babel-node -r dotenv/config ./src/_listen.js",
-    "dev:auth": "babel-node -r dotenv/config ./src/_authorize.js"
+    "start": "babel-node -r dotenv/config ./src/index.js",
+    "dev": "babel-node -r dotenv/config ./src/index.js dotenv_config_path=./.env.dev",
+    "test": "babel-node -r dotenv/config ./src/test.js",
+    "auth": "babel-node -r dotenv/config ./src/_authorize.js"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +16,6 @@
     "@babel/node": "^7.12.6",
     "@babel/preset-env": "^7.12.1",
     "chalk": "^4.1.0",
-    "cross-env": "^7.0.2",
     "dateformat": "^4.0.0",
     "dotenv": "^8.2.0",
     "pushbullet": "^2.4.0",
