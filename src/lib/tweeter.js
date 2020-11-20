@@ -1,21 +1,21 @@
 import dateformat from 'dateformat'
-import twitter from './twitters/twitter'
+import twitter from './api/twitter'
 
 // {
 //   type, source_device_iden, source_user_iden, client_version, dismissible,
 //   icon, title, body, image, application_name, package_name, notification_id, notification_tag, actions
 // }
 
-const stringEscape = function (val = '') {
+const stringEscape = function (val = '', limit = 100) {
   // twitter で反応する記号を全角に
-  const escape = val
+  const escapeStr = val
     .replace(/#/g, '＃')
     .replace(/@/g, '＠')
 
   // 現状 100 文字に切り詰める
-  const limit = escape.substr(0, 100)
+  const limitStr = escapeStr.substr(0, limit)
 
-  return limit
+  return limitStr
 }
 
 const tweet = async function (text) {
@@ -36,15 +36,30 @@ const notifyTest = async function (post) {
   await tweet(text)
 }
 
-const startLiveStreaming = async function (post) {
+const scheduleStreaming = async function (video) {
   const now = dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')
-  const mes = '🌾「配信が始まったよ！」'
-  const title = stringEscape(post.body || '-タイトル不明-')
-  const url = post.notification_tag
-    ? 'https://youtu.be/' + post.notification_tag
+  const serif = '🌾「配信予定だよ！」'
+  const title = stringEscape(video.title || '-タイトル不明-', 90)
+  const time = video.scheduledStartTime
+    ? '⏰ 時間: ' + dateformat(video.scheduledStartTime, 'HH:MM ~')
+    : '-時間不明-'
+  const url = video.videoId
+    ? 'https://youtu.be/' + video.videoId
     : '-URL不明-'
 
-  const text = `${now}\n${mes}\n${title}\n${url}`
+  const text = `${now}\n${serif}\n${title}\n${time}\n${url}`
+  await tweet(text)
+}
+
+const startLiveStreaming = async function (video) {
+  const now = dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')
+  const serif = '🌾「配信が始まったよ！」'
+  const title = stringEscape(video.title || '-タイトル不明-', 100)
+  const url = video.videoId
+    ? 'https://youtu.be/' + video.videoId
+    : '-URL不明-'
+
+  const text = `${now}\n${serif}\n${title}\n${url}`
   await tweet(text)
 }
 
@@ -52,5 +67,6 @@ const startLiveStreaming = async function (post) {
 
 export default {
   notifyTest,
+  scheduleStreaming,
   startLiveStreaming,
 }

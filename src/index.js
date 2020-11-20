@@ -1,6 +1,6 @@
 import PushBullet from 'pushbullet'
 import config from './config/index'
-import twitter from './lib/twitters/twitter'
+import twitter from './lib/api/twitter'
 import handler from './handler/handler'
 
 // https://github.com/alexwhitman/node-pushbullet-api

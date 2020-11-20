@@ -9,6 +9,8 @@ const client = new Twitter({
   access_token_secret: config.twitter.accessTokenSecret,
 });
 
+///
+
 // 接続している user を取得
 const getClientUser = async function () {
   const user = await client.get('account/verify_credentials')
@@ -19,7 +21,8 @@ const getClientUser = async function () {
 const postTweet = async function (text) {
   // dump モードならスタブを作成
   if (config.mode.ignoreTweet) {
-    return { id: 'stub', id_str: 'stub', text: text }
+    const tweet = { id: 'stub', id_str: 'stub', text: text }
+    return tweet
   }
 
   // つぶやく
@@ -28,6 +31,8 @@ const postTweet = async function (text) {
   });
   return tweet
 }
+
+///
 
 export default {
   getClientUser,

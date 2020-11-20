@@ -18,6 +18,7 @@ export default {
     accessTokenSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
   },
   youtube: {
+    apiKey: process.env.YOUTUBE_API_KEY,
     channelName: process.env.YOUTUBE_CHANNEL_NAME, // nullable
   }
 }
