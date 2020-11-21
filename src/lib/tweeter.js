@@ -1,5 +1,6 @@
 import dateformat from 'dateformat'
 import twitter from './api/twitter'
+import config from '../config'
 
 // {
 //   type, source_device_iden, source_user_iden, client_version, dismissible,
@@ -84,9 +85,23 @@ const endLiveStreaming = async function (video) {
 
 ///
 
+const memberCommunity = async function () {
+  const now = dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')
+  const serif = '🌾「メンバー限定の投稿があったよ！」'
+  const url = config.youtube.channelId
+    ? 'https://www.youtube.com/channel/' + config.youtube.channelId + '/community'
+    : '-URL不明-'
+
+  const text = `${now}\n${serif}\n${url}`
+  await tweet(text)
+}
+
+///
+
 export default {
   notifyTest,
   scheduleStreaming,
   startLiveStreaming,
   endLiveStreaming,
+  memberCommunity,
 }

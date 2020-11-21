@@ -19,6 +19,7 @@ export default {
   },
   youtube: {
     apiKey: process.env.YOUTUBE_API_KEY,
+    channelId: process.env.YOUTUBE_CHANNEL_ID, // nullable
     channelName: process.env.YOUTUBE_CHANNEL_NAME, // nullable
   }
 }
