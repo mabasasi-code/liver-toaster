@@ -20,6 +20,7 @@ const mapping = function (rawVideo) {
       actualEndTime: get(rawVideo, 'liveStreamingDetails.actualEndTime'),
       notifyStart: false, // 開始ツイート
       notifySchedule: false, // 予定ツイート
+      notifyEnd: false, // 終了ツイート
     }
     return video
   }

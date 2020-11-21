@@ -35,6 +35,17 @@ export default async function (videoId) {
     }
   }
 
+  // 配信が終わってて、終了ツイをしてなさそうならする
+  if (video.actualStartTime && video.actualEndTime) {
+    if (video.notifyEnd) {
+      console.log('> already end tweet')
+    } else {
+      await tweeter.endLiveStreaming(video)
+      video.notifyEnd = true
+    }
+  }
+
+
   // DB に保存する
   await videoStore.upsertVideo(video)
   console.log('> success!')

@@ -63,10 +63,30 @@ const startLiveStreaming = async function (video) {
   await tweet(text)
 }
 
+const endLiveStreaming = async function (video) {
+  const now = dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')
+  const serif = '🌾「配信が終わったよ！」'
+  const title = stringEscape(video.title || '-タイトル不明-', 80)
+  const start = video.actualStartTime
+    ? dateformat(video.actualStartTime, 'HH:MM')
+    : '--:--'
+  const end = video.actualEndTime
+    ? dateformat(video.actualEndTime, 'HH:MM')
+    : '--:--'
+  const time = '⏰: ' + start + ' ~ ' + end
+  const url = video.videoId
+    ? 'https://youtu.be/' + video.videoId
+    : '-URL不明-'
+
+  const text = `${now}\n${serif}\n${title}\n${time}\n${url}`
+  await tweet(text)
+}
+
 ///
 
 export default {
   notifyTest,
   scheduleStreaming,
   startLiveStreaming,
+  endLiveStreaming,
 }
