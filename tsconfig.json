@@ -2,16 +2,10 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
-    "lib": ["esnext", "dom"],
-    "types": ["node"],
-    "strict": true,
-    "importHelpers": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "outDir": "dist"
+    "sourceMap": true,
+    "esModuleInterop": true, // inport * の抑制
   },
-  "include": ["src"],
-  // "exclude": ["**/*.test.ts"]
+  "exclude": [
+    "node_modules",
+  ]
 }
