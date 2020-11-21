@@ -16,7 +16,7 @@ export default async function (videoId) {
   }
 
   // 配信が始まってなくて、予定ツイをしてなさそうならする
-  if (!video.actualEndTime) {
+  if (!video.actualStartTime && !video.actualEndTime) {
     if (video.notifySchedule) {
       console.log('> already schedule tweet')
     } else {
