@@ -1,4 +1,4 @@
-import config from "../config"
+import config from "../../config"
 import dumpHandler from "./dumpHandler"
 import pushbulletHandler from "./pushbulletHandler"
 import youtubeHandler from "./youtubeHandler"

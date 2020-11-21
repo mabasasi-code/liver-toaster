@@ -1,5 +1,5 @@
-import config from "../config"
-import tweeter from "../lib/tweeter"
+import config from "../../config"
+import tweeter from "../../lib/tweeter"
 
 const NOTIFY_TITLE = '通知のテスト'
 

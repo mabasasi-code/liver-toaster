@@ -1,5 +1,5 @@
-import tweeter from '../tweeter'
-import videoStore from './videoStore'
+import tweeter from '../../lib/tweeter'
+import videoStore from '../../lib/store/video'
 
 export default async function (videoId) {
   console.log('> videoId: ' + videoId)

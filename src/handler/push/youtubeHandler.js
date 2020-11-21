@@ -1,6 +1,6 @@
-import config from '../config'
-import tweeter from '../lib/tweeter'
-import videoHandler from '../lib/video/videoHandler'
+import config from '../../config'
+import tweeter from '../../lib/tweeter'
+import videoHandler from '../video/videoHandler'
 
 const TITLE_PREFIX = '🔴 '
 const TITLE_SCHEDULE_PREFIX = '🔴 30 分後に '

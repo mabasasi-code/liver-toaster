@@ -1,7 +1,7 @@
 import PushBullet from 'pushbullet'
 import config from './config/index'
 import twitter from './lib/api/twitter'
-import handler from './handler/handler'
+import handler from './handler/push'
 
 // https://github.com/alexwhitman/node-pushbullet-api
 const pusher = new PushBullet(config.pushbullet.accessToken)
