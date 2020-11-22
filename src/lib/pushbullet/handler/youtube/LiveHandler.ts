@@ -1,8 +1,8 @@
 import config from '../../../../config'
-import PushInterface from "../../../interface/pushbullet/PushInterface";
-import { Log } from '../../../../logger/Logger';
-import VideoProcess from '../../../process/VideoProcess';
-import BashYoutubeHandler from "./BaseYoutubeHandler";
+import PushInterface from "../../../interface/pushbullet/PushInterface"
+import { Log } from '../../../../logger/Logger'
+import VideoProcess from '../../../process/VideoProcess'
+import BashYoutubeHandler from "./BaseYoutubeHandler"
 
 export default class LiveHandler extends BashYoutubeHandler {
   public readonly TITLE_PREFIX = '🔴 '
@@ -11,7 +11,6 @@ export default class LiveHandler extends BashYoutubeHandler {
   public isValid(push: PushInterface): boolean {
     const title = push.title || ''
     const channelName = config.youtube.channelName || ''
-    console.log(title)
 
     // チャンネル名が指定されているなら完全一致、ないなら先頭一致
     if (title.startsWith(this.TITLE_PREFIX + channelName)

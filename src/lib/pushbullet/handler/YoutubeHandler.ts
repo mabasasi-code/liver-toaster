@@ -3,6 +3,7 @@ import PushInterface from "../../interface/pushbullet/PushInterface";
 import BasePushHandler from "./BasePushHandler";
 import BaseYoutubeHandler from "./youtube/BaseYoutubeHandler";
 import LiveHandler from "./youtube/LiveHandler";
+import MemberHandler from "./youtube/MemberHandler";
 
 export class YoutubeHandler extends BasePushHandler {
   public readonly YOUTUBE_PACKAGE_NAME = 'com.google.android.youtube'
@@ -13,6 +14,7 @@ export class YoutubeHandler extends BasePushHandler {
     super()
     this.handlers = []
     this.handlers.push(new LiveHandler())
+    this.handlers.push(new MemberHandler())
   }
 
   public isValid(push: PushInterface): boolean {
