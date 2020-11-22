@@ -1,5 +1,6 @@
 import config from "../../../config/Index";
 import PushInterface from "../../../interface/pushbullet/PushInterface";
+import Tweeter from "../../util/Tweeter";
 import PushHandler from "./PushHandler";
 
 export class TestHandler extends PushHandler {
@@ -18,6 +19,6 @@ export class TestHandler extends PushHandler {
   }
 
   public async handle(push: PushInterface): Promise<void> {
-    console.log('てすとっぽい')
+    await Tweeter.testNotify()
   }
 }

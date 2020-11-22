@@ -36,11 +36,10 @@ export default class Pushbullet {
           resolve(user)
         })
 
-        stream.on('push', async function (push: PushInterface) {
+        stream.on('push', async (push: PushInterface) => {
           try {
             if (push.type === 'mirror') {
-              console.log('ok')
-              // await handler(push)
+              await this.pushHandle(push)
             }
           } catch (err) {
             console.error(err)

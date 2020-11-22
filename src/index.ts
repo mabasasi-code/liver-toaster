@@ -2,6 +2,7 @@ import { promises as fs } from 'fs'
 import config from './config/Index'
 import Twitter from './lib/api/Twitter'
 import Pushbullet from './lib/pushbullet/Pushbullet'
+import Tweeter from './lib/util/Tweeter'
 import { Log } from './logger/Logger'
 
 const boot = async () => {
@@ -17,6 +18,7 @@ const boot = async () => {
     config.twitter.accessTokenSecret,
     config.mode.ignoreTweet,
   )
+  Tweeter.client = twitter // global にセット
 
   const pushUser = await pushbullet.connect()
   const clientUser = await twitter.getClientUser()

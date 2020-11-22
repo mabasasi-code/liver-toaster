@@ -23,6 +23,10 @@ export default class Twitter {
     this.stubMode = stubMode
   }
 
+  public isStubMode() {
+    return this.stubMode
+  }
+
   public async getClientUser(): Promise<UserInterface | null> {
     const user = await this.client.get('account/verify_credentials')
     return user
