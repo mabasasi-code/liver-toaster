@@ -4,15 +4,18 @@ import Tweeter from "../../util/Tweeter";
 import PushHandler from "./PushHandler";
 
 export class TestHandler extends PushHandler {
+  public readonly PUSHBULLET_PACKAGE_NAME = 'com.pushbullet.android'
   public readonly NOTIFY_TITLE = '通知のテスト'
 
   public isValid(push: PushInterface): boolean {
-    // config でテスト通知が off なら対象外
-    if (!config.mode.testNotify)  return false
+    if (push.package_name === this.PUSHBULLET_PACKAGE_NAME) {
+      // config でテスト通知が off なら対象外
+      if (!config.mode.testNotify)  return false
 
-    // タイトルが一致したら対象
-    if (push.title === this.NOTIFY_TITLE) {
-      return true
+      // タイトルが一致したら対象
+      if (push.title === this.NOTIFY_TITLE) {
+        return true
+      }
     }
 
     return false
