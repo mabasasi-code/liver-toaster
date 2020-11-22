@@ -1,9 +1,10 @@
 import PushbulletAPI from 'pushbullet'
 import PushInterface from '../../interface/pushbullet/PushInterface'
 import UserInterface from '../../interface/pushbullet/UserInterface'
-import { DumpHandler } from './handler/DumpHandler'
-import PushHandler from './handler/PushHandler'
-import { TestHandler } from './handler/TestHandler'
+import DumpHandler from './handler/DumpHandler'
+import PushHandler from './handler/BasePushHandler'
+import TestHandler from './handler/TestHandler'
+import { YoutubeHandler } from './handler/YoutubeHandler'
 
 export default class Pushbullet {
   private accessToken: string
@@ -17,6 +18,7 @@ export default class Pushbullet {
 
     this.handlers = []
     this.handlers.push(new DumpHandler())
+    this.handlers.push(new YoutubeHandler())
     this.handlers.push(new TestHandler())
   }
 
@@ -62,13 +64,16 @@ export default class Pushbullet {
   }
 
   public async pushHandle (push: PushInterface) {
-      for (const handler of this.handlers) {
-        try {
-          const isValid = handler.isValid(push)
-          if (isValid) await handler.handle(push)
-        } catch (err) {
-          console.error(err)
+    // 一つずつ全て実行する
+    for (const handler of this.handlers) {
+      try {
+        const isValid = handler.isValid(push)
+        if (isValid) {
+          await handler.handle(push)
         }
+      } catch (err) {
+        console.error(err)
       }
+    }
   }
 }

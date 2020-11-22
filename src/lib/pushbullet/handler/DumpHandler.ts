@@ -1,9 +1,9 @@
 import config from "../../../config/Index";
 import PushInterface from "../../../interface/pushbullet/PushInterface";
 import { Log } from "../../../logger/Logger";
-import PushHandler from "./PushHandler";
+import BasePushHandler from "./BasePushHandler";
 
-export class DumpHandler extends PushHandler {
+export default class DumpHandler extends BasePushHandler {
   public isValid(push: PushInterface): boolean {
     // config でログが off なら対象外
     if (!config.mode.loggingNotify)  return false

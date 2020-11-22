@@ -20,26 +20,26 @@ const boot = async () => {
   )
   Tweeter.client = twitter // global にセット
 
-  const pushUser = await pushbullet.connect()
-  const clientUser = await twitter.getClientUser()
+  // const pushUser = await pushbullet.connect()
+  // const clientUser = await twitter.getClientUser()
 
-  const device = (pushUser.name || '--') + ' (' + pushUser.iden + ')'
-  const client = (clientUser.name || '--') + ' (@' + (clientUser.screen_name || '--') + ')'
-  const target = config.youtube.channelName || 'all'
+  // const device = (pushUser.name || '--') + ' (' + pushUser.iden + ')'
+  // const client = (clientUser.name || '--') + ' (@' + (clientUser.screen_name || '--') + ')'
+  // const target = config.youtube.channelName || 'all'
 
-  Log.info('listen ...')
-  Log.info('> device: ' + device)
-  Log.info('> client: ' + client)
-  Log.info('> setup: ' + JSON.stringify(config.mode))
-  Log.info('> target: ' + target)
+  // Log.info('listen ...')
+  // Log.info('> device: ' + device)
+  // Log.info('> client: ' + client)
+  // Log.info('> setup: ' + JSON.stringify(config.mode))
+  // Log.info('> target: ' + target)
 
   // const tweet = await twitter.postTweet(new Date().toLocaleString())
   // console.log(tweet)
 
-  // const json = await fs.readFile('./storage/records/json/mirrorTest.json', 'utf-8')
-  // const push = JSON.parse(json)
+  const json = await fs.readFile('./storage/records/json/mirrorStartLiveStreaming.json', 'utf-8')
+  const push = JSON.parse(json)
 
-  // await pushbullet.pushHandle(push)
+  await pushbullet.pushHandle(push)
 }
 
 boot()
