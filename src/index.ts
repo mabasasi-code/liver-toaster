@@ -2,6 +2,7 @@ import { promises as fs } from 'fs'
 import config from './config/Index'
 import Twitter from './lib/api/Twitter'
 import Pushbullet from './lib/pushbullet/Pushbullet'
+import { Log } from './logger/Logger'
 
 const boot = async () => {
   const pushbullet = new Pushbullet(
@@ -24,16 +25,16 @@ const boot = async () => {
   const client = (clientUser.name || '--') + ' (@' + (clientUser.screen_name || '--') + ')'
   const target = config.youtube.channelName || 'all'
 
-  console.log('listen ...')
-  console.log('> device: ' + device)
-  console.log('> client: ' + client)
-  console.log('> setup: ' + JSON.stringify(config.mode))
-  console.log('> target: ' + target)
+  Log.info('listen ...')
+  Log.info('> device: ' + device)
+  Log.info('> client: ' + client)
+  Log.info('> setup: ' + JSON.stringify(config.mode))
+  Log.info('> target: ' + target)
 
   // const tweet = await twitter.postTweet(new Date().toLocaleString())
   // console.log(tweet)
 
-  // const json = await fs.readFile('./records/json/mirrorTest.json', 'utf-8')
+  // const json = await fs.readFile('./storage/records/json/mirrorTest.json', 'utf-8')
   // const push = JSON.parse(json)
 
   // await pushbullet.pushHandle(push)
