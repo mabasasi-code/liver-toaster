@@ -1,4 +1,3 @@
-import { promises as fs } from 'fs'
 import bootstrap, { PushbulletInstance, TwitterAPI } from './bootstrap'
 import config from './config/Index'
 import { Log } from './logger/Logger'

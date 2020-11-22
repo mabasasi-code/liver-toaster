@@ -6,6 +6,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=product ts-node -r dotenv/config ./src/index.ts",
     "dev": "cross-env NODE_ENV=develop ts-node -r dotenv/config ./src/index.ts dotenv_config_path=./.env.dev",
+    "snippet": "cross-env NODE_ENV=develop ts-node -r dotenv/config ./src/_dev.ts dotenv_config_path=./.env.dev",
     "auth": "ts-node -r dotenv/config ./src/_authorize.ts",
     "auth:dev": "ts-node -r dotenv/config ./src/_authorize.ts dotenv_config_path=./.env.dev"
   },
