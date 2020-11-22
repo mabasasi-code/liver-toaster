@@ -3,7 +3,7 @@ import log4js from 'log4js'
 import dateformat from 'dateformat'
 import chalk from 'chalk'
 
-const LOG_LEVEL = 'ALL' // DEBUG: TRACE or DEBUG, PRODUCTION: INFO or OFF
+const LOG_LEVEL = process.env.LOG_LEVEL || 'ALL' // DEBUG: TRACE or DEBUG, PRODUCTION: INFO or OFF
 const FILENAME = process.env.NODE_ENV || 'develop'
 
 const levelColors = {
@@ -58,7 +58,7 @@ log4js.configure({
     out: { type: 'stdout', layout: { type: 'origin', addColor: true } },
     logFile: { type: 'file', filename: `storage/logs/${FILENAME}.log`, layout: { type: 'origin', addColor: false } },
     errFile: { type: 'file', filename: 'storage/logs/error.log', layout: { type: 'origin', addColor: false } },
-    log: { type: 'logLevelFilter', appender: 'logFile', level: 'info' },
+    log: { type: 'logLevelFilter', appender: 'logFile', level: LOG_LEVEL }, // レベルを default と揃える
     err: { type: 'logLevelFilter', appender: 'errFile', level: 'warn' },
   },
   categories: {

@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "babel-node -r dotenv/config ./src/index.js",
+    "start": "cross-env NODE_ENV=product babel-node -r dotenv/config ./src/index.ts",
     "dev": "cross-env NODE_ENV=develop ts-node -r dotenv/config ./src/index.ts dotenv_config_path=./.env.dev",
-    "test": "babel-node -r dotenv/config ./src/test.js dotenv_config_path=./.env.dev",
     "auth": "babel-node -r dotenv/config ./src/_authorize.js"
   },
   "keywords": [],
