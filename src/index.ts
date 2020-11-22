@@ -18,11 +18,6 @@ const main = async () => {
   Log.info('> client: ' + client)
   Log.info('> setup: ' + JSON.stringify(config.mode))
   Log.info('> target: ' + target + '\n')
-
-  const json = await fs.readFile('./storage/records/json/mirrorStartLiveStreaming.json', 'utf-8')
-  const push = JSON.parse(json)
-
-  await PushbulletInstance.pushHandle(push)
 }
 
 main()
