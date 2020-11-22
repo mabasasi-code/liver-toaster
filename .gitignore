@@ -1,5 +1,4 @@
 node_modules
-database
-records
+storage
 .env
 .env.dev
