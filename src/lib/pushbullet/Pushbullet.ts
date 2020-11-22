@@ -5,6 +5,7 @@ import DumpHandler from './handler/DumpHandler'
 import PushHandler from './handler/BasePushHandler'
 import TestHandler from './handler/TestHandler'
 import { YoutubeHandler } from './handler/YoutubeHandler'
+import { Log } from '../../logger/Logger'
 
 export default class Pushbullet {
   private accessToken: string
@@ -46,7 +47,7 @@ export default class Pushbullet {
               await this.pushHandle(push)
             }
           } catch (err) {
-            console.error(err)
+            Log.error(err)
           }
         })
 
@@ -72,7 +73,7 @@ export default class Pushbullet {
           await handler.handle(push)
         }
       } catch (err) {
-        console.error(err)
+        Log.error(err)
       }
     }
   }

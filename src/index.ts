@@ -20,3 +20,7 @@ const main = async () => {
 }
 
 main()
+  .catch(err => {
+    Log.error(err)
+    process.exit(1)
+  })
