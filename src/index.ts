@@ -12,11 +12,11 @@ const main = async () => {
   const client = (clientUser.name || '--') + ' (@' + (clientUser.screen_name || '--') + ')'
   const target = config.youtube.channelName || 'all'
 
-  Log.info('listen ...')
+  Log.info('<RUN> listen ...')
   Log.info('> device: ' + device)
   Log.info('> client: ' + client)
   Log.info('> setup: ' + JSON.stringify(config.mode))
-  Log.info('> target: ' + target + '\n')
+  Log.info('> target: ' + target)
 }
 
 main()
