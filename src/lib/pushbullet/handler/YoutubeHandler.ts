@@ -1,6 +1,5 @@
 import { Log } from "../../../logger/Logger";
 import PushInterface from "../../interface/pushbullet/PushInterface";
-import Tweeter from "../../util/Tweeter";
 import BasePushHandler from "./BasePushHandler";
 import BaseYoutubeHandler from "./youtube/BaseYoutubeHandler";
 import LiveHandler from "./youtube/LiveHandler";
@@ -34,6 +33,8 @@ export class YoutubeHandler extends BasePushHandler {
       }
     }
 
-    await Tweeter.testNotify()
+    // 一つも実行されなかったらとりあえず dump しとく
+    Log.debug('> no handling')
+    Log.debug(JSON.stringify(push))
   }
 }
