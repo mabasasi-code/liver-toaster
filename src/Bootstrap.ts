@@ -3,6 +3,7 @@ import config from "./config/Index"
 import Twitter from "./lib/api/Twitter";
 import Youtube from "./lib/api/Youtube";
 import Pushbullet from "./lib/pushbullet/Pushbullet";
+import Scheduler from "./lib/Scheduler";
 import Video from "./lib/store/Video";
 
 // TODO: 仮実装
@@ -11,6 +12,8 @@ export const PushbulletInstance = new Pushbullet(
   config.pushbullet.accessToken,
   config.pushbullet.encryptionKey
 )
+
+export const SchedulerInstance = new Scheduler()
 
 export const TwitterAPI = new Twitter(
   config.twitter.consumerKey,

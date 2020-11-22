@@ -13,13 +13,13 @@ export default class BaseStore<T> {
     this.store = store
   }
 
-  public async find(videoId: string): Promise<T[] | null> {
-    const videos: T[] | null = await this.store.find({ videoId: videoId })
+  public async find(query: any): Promise<T[] | null> {
+    const videos: T[] | null = await this.store.find(query)
     return videos
   }
 
-  public async findOne(videoId: string): Promise<T | null> {
-    const video: T | null = await this.store.findOne({ videoId: videoId })
+  public async findOne(query: any): Promise<T | null> {
+    const video: T | null = await this.store.findOne(query)
     return video
   }
 

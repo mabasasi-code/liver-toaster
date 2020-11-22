@@ -1,4 +1,4 @@
-import bootstrap, { PushbulletInstance, TwitterAPI } from './bootstrap'
+import bootstrap, { PushbulletInstance, SchedulerInstance, TwitterAPI } from './bootstrap'
 import config from './config/Index'
 import { Log } from './logger/Logger'
 
@@ -7,6 +7,8 @@ const main = async () => {
 
   const pushUser = await PushbulletInstance.connect()
   const clientUser = await TwitterAPI.getClientUser()
+
+  await SchedulerInstance.run()
 
   const device = (pushUser.name || '--') + ' (' + pushUser.iden + ')'
   const client = (clientUser.name || '--') + ' (@' + (clientUser.screen_name || '--') + ')'

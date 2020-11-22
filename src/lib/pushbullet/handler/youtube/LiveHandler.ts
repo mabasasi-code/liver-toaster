@@ -24,10 +24,10 @@ export default class LiveHandler extends BashYoutubeHandler {
   public async handle(push: PushInterface): Promise<void> {
     if (push.title.startsWith(this.TITLE_SCHEDULE_PREFIX)) {
       Log.debug('> live schedule notify')
-      await VideoProcess.exec(push.notification_tag)
+      await VideoProcess.execById(push.notification_tag)
     } else {
       Log.debug('> live start notify')
-      await VideoProcess.exec(push.notification_tag)
+      await VideoProcess.execById(push.notification_tag)
     }
   }
 }
