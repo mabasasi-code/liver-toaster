@@ -26,6 +26,9 @@ export class YoutubeHandler extends BasePushHandler {
   }
 
   public async handle(push: PushInterface): Promise<void> {
+    // youtube はとりあえず dump しておく
+    Log.trace(JSON.stringify(push))
+
     // 先頭からどれか一つ実行する (try-catch も上位に任せる)
     for (const handler of this.handlers) {
       const isValid = handler.isValid(push)
@@ -35,8 +38,6 @@ export class YoutubeHandler extends BasePushHandler {
       }
     }
 
-    // 一つも実行されなかったらとりあえず dump しとく
     Log.debug('> no handling')
-    Log.debug(JSON.stringify(push))
   }
 }
