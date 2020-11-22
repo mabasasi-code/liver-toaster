@@ -1,5 +1,5 @@
 import config from '../../../../config'
-import PushInterface from "../../../../interface/pushbullet/PushInterface";
+import PushInterface from "../../../interface/pushbullet/PushInterface";
 import { Log } from '../../../../logger/Logger';
 import VideoProcess from '../../../process/VideoProcess';
 import BashYoutubeHandler from "./BaseYoutubeHandler";

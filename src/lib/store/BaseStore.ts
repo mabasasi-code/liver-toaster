@@ -1,5 +1,5 @@
 import nedb from 'nedb-promises'
-import VideoInterface from '../../interface/database/VideoInterface'
+import VideoInterface from '../interface/database/VideoInterface'
 
 export default class BaseStore<T> {
   private store: nedb

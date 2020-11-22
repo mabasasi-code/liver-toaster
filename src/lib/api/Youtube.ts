@@ -1,6 +1,6 @@
 import { get } from 'dot-prop'
 import { google, youtube_v3 } from 'googleapis'
-import VideoInterface from '../../interface/youtube/VideoInterface'
+import VideoInterface from '../interface/youtube/VideoInterface'
 
 export default class Youtube {
   private client: youtube_v3.Youtube

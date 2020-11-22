@@ -1,5 +1,5 @@
 import config from "../../../config/Index";
-import PushInterface from "../../../interface/pushbullet/PushInterface";
+import PushInterface from "../../interface/pushbullet/PushInterface";
 import { Log } from "../../../logger/Logger";
 import Tweeter from "../../util/Tweeter";
 import BasePushHandler from "./BasePushHandler";

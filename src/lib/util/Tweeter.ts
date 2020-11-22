@@ -1,6 +1,6 @@
 import dateformat from 'dateformat'
 import { TwitterAPI } from '../../Bootstrap';
-import VideoInterface from '../../interface/database/VideoInterface';
+import VideoInterface from '../interface/database/VideoInterface';
 import { Log } from '../../logger/Logger';
 
 export default class Tweeter {

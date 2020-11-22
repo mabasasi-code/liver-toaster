@@ -1,6 +1,6 @@
 import { get } from "dot-prop";
-import VideoInterface from "../../interface/database/VideoInterface";
-import YoutubeVideoInterface from "../../interface/youtube/VideoInterface";
+import VideoInterface from "../interface/database/VideoInterface";
+import YoutubeVideoInterface from "../interface/youtube/VideoInterface";
 import BaseStore from "./BaseStore";
 
 export default class Video extends BaseStore<VideoInterface> {
