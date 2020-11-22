@@ -1,10 +1,10 @@
 import { promises as fs } from 'fs'
-import Bootstrap, { PushbulletInstance, TwitterAPI } from './Bootstrap'
+import bootstrap, { PushbulletInstance, TwitterAPI } from './bootstrap'
 import config from './config/Index'
 import { Log } from './logger/Logger'
 
 const main = async () => {
-  await Bootstrap()
+  await bootstrap()
 
   const pushUser = await PushbulletInstance.connect()
   const clientUser = await TwitterAPI.getClientUser()

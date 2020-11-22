@@ -1,4 +1,4 @@
-import { VideoStore, YoutubeAPI } from "../../Bootstrap";
+import { VideoStore, YoutubeAPI } from "../../bootstrap";
 import VideoInterface from "../interface/database/VideoInterface";
 import { Log } from "../../logger/Logger";
 import Tweeter from "../util/Tweeter";

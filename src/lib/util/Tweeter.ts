@@ -1,5 +1,5 @@
 import dateformat from 'dateformat'
-import { TwitterAPI } from '../../Bootstrap';
+import { TwitterAPI } from '../../bootstrap';
 import VideoInterface from '../interface/database/VideoInterface';
 import { Log } from '../../logger/Logger';
 
