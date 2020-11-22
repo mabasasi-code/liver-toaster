@@ -1,6 +1,7 @@
 import PushbulletAPI from 'pushbullet'
 import PushInterface from '../../interface/pushbullet/PushInterface'
 import UserInterface from '../../interface/pushbullet/UserInterface'
+import { DumpHandler } from './handler/DumpHandler'
 import PushHandler from './handler/PushHandler'
 import { TestHandler } from './handler/TestHandler'
 
@@ -15,6 +16,7 @@ export default class Pushbullet {
     this.encryptionKey = encryptionKey
 
     this.handlers = []
+    this.handlers.push(new DumpHandler())
     this.handlers.push(new TestHandler())
   }
 
