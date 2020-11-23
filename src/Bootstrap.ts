@@ -8,23 +8,32 @@ import Video from "./lib/store/Video";
 
 // TODO: 仮実装
 
-export const PushbulletInstance = new Pushbullet(
-  config.pushbullet.accessToken,
-  config.pushbullet.encryptionKey
-)
+export let VideoStore: Video
 
-export const SchedulerInstance = new Scheduler()
+export let YoutubeAPI: Youtube
+export let TwitterAPI: Twitter
 
-export const TwitterAPI = new Twitter(
-  config.twitter.consumerKey,
-  config.twitter.consumerSecret,
-  config.twitter.accessToken,
-  config.twitter.accessTokenSecret,
-  config.mode.ignoreTweet,
-)
+export let PushbulletInstance: Pushbullet
+export let SchedulerInstance: Scheduler
 
-export const YoutubeAPI = new Youtube(config.youtube.apiKey)
+export default async () => {
+  VideoStore = new Video()
 
-export const VideoStore = new Video()
+  YoutubeAPI = new Youtube(config.youtube.apiKey)
 
-export default async () => {}
+  TwitterAPI = new Twitter(
+    config.twitter.consumerKey,
+    config.twitter.consumerSecret,
+    config.twitter.accessToken,
+    config.twitter.accessTokenSecret,
+    config.mode.ignoreTweet,
+  )
+
+  PushbulletInstance = new Pushbullet(
+    config.pushbullet.accessToken,
+    config.pushbullet.encryptionKey
+  )
+
+  SchedulerInstance = new Scheduler()
+}
+
