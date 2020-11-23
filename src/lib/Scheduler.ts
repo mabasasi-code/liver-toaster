@@ -1,12 +1,12 @@
 import dateformat from 'dateformat'
 import schedule from 'node-schedule'
-import { VideoStore } from '../Bootstrap'
+import { VideoStore } from '../bootstrap'
 import { Log } from '../logger/Logger'
 import VideoProcess from './process/VideoProcess'
 
 export default class Scheduler {
   public async run(): Promise<void> {
-    schedule.scheduleJob('*/5 * * * *', async (date: Date) => {
+    schedule.scheduleJob('*/10 * * * *', async (date: Date) => {
       try {
         // 5 分おきに処理をする
         Log.info('[schedule] ' + dateformat(date, 'yyyy-mm-dd HH:MM:ss'))
