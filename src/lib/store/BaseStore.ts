@@ -26,10 +26,10 @@ export default class BaseStore<T> {
     return video
   }
 
-  public async upsert(video: VideoInterface): Promise<T | null> {
+  public async upsert(query: any, value: T): Promise<T | null> {
     const res: T | null = await this.store.update(
-      { videoId: video.videoId },
-      { $set: video },
+      query,
+      { $set: value },
       { upsert: true, returnUpdatedDocs: true }
     )
     return res

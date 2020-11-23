@@ -8,6 +8,12 @@ export default class Video extends BaseStore<VideoInterface> {
     super('videos.db')
   }
 
+  // @override
+  public async upsert(value: VideoInterface): Promise<VideoInterface | null> {
+    const videoId = value.videoId
+    return super.upsert({ videoId: videoId }, value)
+  }
+
   public attachAPIValue(db?: VideoInterface, api?: YoutubeVideoInterface): VideoInterface {
     const base: VideoInterface = {
       videoId: get(api, 'id'),
