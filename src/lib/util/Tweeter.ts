@@ -50,7 +50,7 @@ export default class Tweeter {
 
     const lines = [
       dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
-      '🌾「配信が始まったよ！」',
+      '🌾「🔴 配信が始まったよ！」',
       this.stringEscape(video.title || '-タイトル不明-', 80),
       this.timeString(video.actualStartTime),
       url,
@@ -78,7 +78,7 @@ export default class Tweeter {
   protected static async tweet (text: string) {
     const tweet = await TwitterAPI.postTweet(text)
     const stub = TwitterAPI.isStubMode() ? '(stub)' : ''
-    Log.info(`> tweet ${stub}\n${tweet.text}[EOL]`)
+    Log.info(`> tweet ${stub}\n${tweet.text} [EOL]`)
   }
 
   protected static stringEscape (text: string, limit: number = 100): string {
