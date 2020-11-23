@@ -1,4 +1,5 @@
 import dateformat from 'dateformat'
+import diffDates from 'diff-dates'
 import { TwitterAPI } from '../../bootstrap';
 import VideoInterface from '../interface/database/VideoInterface';
 import { Log } from '../../logger/Logger';
@@ -28,9 +29,6 @@ export default class Tweeter {
   ///
 
   public static async scheduleStreaming(video: VideoInterface) {
-    const time = video.scheduledStartTime
-      ? dateformat(video.scheduledStartTime, 'HH:MM ~')
-      : '--:--'
     const url = video.videoId
       ? 'https://youtu.be/' + video.videoId
       : '-URL不明-'
@@ -39,16 +37,13 @@ export default class Tweeter {
       dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
       '🌾「配信予定だよ！」',
       this.stringEscape(video.title || '-タイトル不明-', 80),
-      '⏰: ' + time,
+      this.timeString(video.scheduledStartTime),
       url,
     ]
     await this.tweet(lines.join('\n'))
   }
 
   public static async startLiveStreaming(video: VideoInterface) {
-    const time = video.actualStartTime
-      ? dateformat(video.actualStartTime, 'HH:MM ~')
-      : '--:--'
     const url = video.videoId
       ? 'https://youtu.be/' + video.videoId
       : '-URL不明-'
@@ -57,20 +52,13 @@ export default class Tweeter {
       dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
       '🌾「配信が始まったよ！」',
       this.stringEscape(video.title || '-タイトル不明-', 80),
-      '⏰: ' + time,
+      this.timeString(video.actualStartTime),
       url,
     ]
     await this.tweet(lines.join('\n'))
   }
 
   public static async endLiveStreaming(video: VideoInterface) {
-    const start = video.actualStartTime
-      ? dateformat(video.actualStartTime, 'HH:MM')
-      : '--:--'
-    const end = video.actualEndTime
-      ? dateformat(video.actualEndTime, 'HH:MM')
-      : '--:--'
-    const time = '⏰: ' + start + ' ~ ' + end
     const url = video.videoId
       ? 'https://youtu.be/' + video.videoId
       : '-URL不明-'
@@ -79,7 +67,7 @@ export default class Tweeter {
       dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
       '🌾「配信が終わったよ！」',
       this.stringEscape(video.title || '-タイトル不明-', 80),
-      '⏰: ' + time,
+      this.timeString(video.actualStartTime, video.actualEndTime, true),
       url,
     ]
     await this.tweet(lines.join('\n'))
@@ -103,5 +91,20 @@ export default class Tweeter {
     const limitText = escapeText.substr(0, limit)
 
     return limitText
+  }
+
+  protected static timeString(startStr?: string, endStr?: string, showEnd: boolean = false) {
+    const startDate = new Date(startStr)
+    const start = startStr ? dateformat(startDate, 'HH:MM') : '--:--'
+
+    let text = '⏰: ' + start + ' ~'
+    if (showEnd) {
+      const endDate = new Date(endStr)
+      const end = endStr ? dateformat(endDate, 'HH:MM') : '--:--'
+
+      const minutes = diffDates(endDate, startDate, 'minutes')
+      text += ' ' + end + ' (' + minutes +' 分)'
+    }
+    return text
   }
 }
