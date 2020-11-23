@@ -10,14 +10,14 @@ export default class Scheduler {
       try {
         // 5 分おきに処理をする
         Log.info('[schedule] ' + dateformat(date, 'yyyy-mm-dd HH:MM:ss'))
-        await this.tenMinutes()
+        await this.checkVideos()
       } catch (err) {
         Log.error(err)
       }
     })
   }
 
-  protected async tenMinutes() {
+   public async checkVideos() {
     // // db から処理対象っぽい動画を全部取り出す
     const videos = await VideoStore.find({ notifyEnd: false })
     if (videos.length > 0) {

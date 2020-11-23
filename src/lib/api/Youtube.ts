@@ -1,6 +1,7 @@
 import { get } from 'dot-prop'
 import { google, youtube_v3 } from 'googleapis'
 import VideoInterface from '../interface/youtube/VideoInterface'
+import ArrayToObject from '../util/ArrayToObject'
 
 export default class Youtube {
   private client: youtube_v3.Youtube
@@ -26,14 +27,8 @@ export default class Youtube {
     })
     const items = get(res, 'data.items', [])
 
-    // key に対して mapping する (null なら削除データ)
-    const map = Object.fromEntries(videoIds.map(id => [id, null]))
-    for (const item of items) {
-      const key: string = get(item, 'id')
-      if (key) {
-        map[key] = item
-      }
-    }
+    // mapping する
+    const map = ArrayToObject<VideoInterface>(videoIds, items, (e) => get(e, 'id'))
     return map
   }
 }

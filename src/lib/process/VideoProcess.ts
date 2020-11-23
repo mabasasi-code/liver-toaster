@@ -2,31 +2,56 @@ import { VideoStore, YoutubeAPI } from "../../bootstrap";
 import VideoInterface from "../interface/database/VideoInterface";
 import { Log } from "../../logger/Logger";
 import Tweeter from "../util/Tweeter";
+import ArrayToObject from "../util/ArrayToObject";
 
 // TODO: まとめたい
 export default class VideoProcess {
-
   public static async execByVideos(videos: VideoInterface[]) {
     const videoIds = videos.map(e => e.videoId)
-    Log.info('videoIds: ' + JSON.stringify(videoIds))
+    Log.info('> videoIds: ' + JSON.stringify(videoIds))
 
-    // api を叩く
+    if (!videos || videos.length === 0) {
+      throw new ReferenceError('No video IDs')
+    }
+
+    await this.exec(videoIds, videos)
+  }
+
+  public static async execById(videoId: string) {
+    Log.info('> videoId: ' + videoId)
+    if (!videoId) {
+      throw new ReferenceError('No video ID')
+    }
+
+    const dbVideo = await VideoStore.findOne({ videoId: videoId })
+
+    await this.exec([videoId], [dbVideo])
+  }
+
+  ///
+
+  protected static async exec(videoIds: string[], videos: VideoInterface[] = []) {
+    // api を叩く (return map)
     const apiVideos = await YoutubeAPI.fetchVideoList(videoIds)
     if (!apiVideos) {
       throw new Error('api failure')
     }
 
+    // dbVideo の map を生成する
+    const dbVideos = ArrayToObject<VideoInterface>(videoIds, videos, (e) => e.videoId)
+
     // 値を結合する (DB <<= API)
     // TODO: 削除処理
-    const mergeVideos = videos.map(dbVideo => {
-      const api = apiVideos[dbVideo.videoId] // null の可能性あり !!! !!!
-      const merge = VideoStore.attachAPIValue(dbVideo, api)
+    const mergeVideos = videoIds.map(videoId => {
+      const db = dbVideos[videoId]
+      const api = apiVideos[videoId] || null
+      const merge = VideoStore.attachAPIValue(db, api) // null なら新規作成される
       return merge
     })
 
     // それぞれの処理
     for (const mergeVideo of mergeVideos) {
-      Log.debug('> videoId: ' + mergeVideo.videoId)
+      Log.trace('> videoId: ' + mergeVideo.videoId)
       // 通知などを実行
       const resVideo = await this.videoNotify(mergeVideo)
 
@@ -37,43 +62,11 @@ export default class VideoProcess {
     Log.debug('> success!')
   }
 
-  public static async execById(videoId: string) {
-    Log.info('videoId: ' + videoId)
-    if (!videoId) {
-      throw new ReferenceError('No video ID')
-    }
-
-    // video を db から取り出す (nullable)
-    const dbVideo = await VideoStore.findOne({ videoId: videoId })
-    Log.debug('> db: ' + (dbVideo !== null))
-
-    // api を叩く
-    const apiVideo = await YoutubeAPI.fetchVideo(videoId)
-    Log.debug('> api: ' + (dbVideo !== null))
-    if (!apiVideo) {
-      // TODO: 動画が削除されているかも
-      throw new Error('api failure')
-    }
-
-    // 値を結合する (DB <<= API)
-    const mergeVideo = VideoStore.attachAPIValue(dbVideo, apiVideo)
-
-    // 通知など実行
-    const resVideo = await this.videoNotify(mergeVideo)
-
-    // DB に保存する
-    await VideoStore.upsert(resVideo)
-    Log.debug('> success!')
-  }
-
-  ///
-
-  protected static async videoNotify(video: VideoInterface) {
+  protected static async videoNotify(video: VideoInterface, force: boolean = false) {
     // 配信が始まってなくて、予定ツイをしてなさそうならする
     if (!video.actualStartTime && !video.actualEndTime) {
-      if (video.notifySchedule) {
-        Log.debug('> already schedule tweet')
-      } else {
+      Log.debug(`> [${video.videoId}] schedule stream (tweet: ${video.notifySchedule})`)
+      if (!video.notifySchedule || force) {
         await Tweeter.scheduleStreaming(video)
         video.notifySchedule = true
       }
@@ -81,9 +74,8 @@ export default class VideoProcess {
 
     // 配信中で、開始ツイをしてなさそうならする
     if (video.actualStartTime && !video.actualEndTime) {
-      if (video.notifyStart) {
-        Log.debug('> already start tweet')
-      } else {
+      Log.debug(`> [${video.videoId}] live streaming (tweet: ${video.notifyStart})`)
+      if (!video.notifyStart || force) {
         await Tweeter.startLiveStreaming(video)
         video.notifyStart = true
       }
@@ -91,9 +83,8 @@ export default class VideoProcess {
 
     // 配信が終わってて、終了ツイをしてなさそうならする
     if (video.actualStartTime && video.actualEndTime) {
-      if (video.notifyEnd) {
-        Log.debug('> already end tweet')
-      } else {
+      Log.debug(`> [${video.videoId}] archive stream (tweet: ${video.notifyEnd})`)
+      if (!video.notifyEnd || force) {
         await Tweeter.endLiveStreaming(video)
         video.notifyEnd = true
       }
