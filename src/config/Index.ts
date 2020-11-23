@@ -1,5 +1,7 @@
 export default {
   env: process.env.NODE_ENV,
+  databasePath: process.env.DATABSE_PATH || './storage/database',
+
   mode: {
     testNotify: (process.env.TEST_NOTIFY === 'true'), // true でテスト通知をONに
     loggingNotify: (process.env.LOGGING_NOTIFY === 'true'), // true で全通知のログ出力

@@ -5,7 +5,7 @@ import BaseStore from "./BaseStore";
 
 export default class Video extends BaseStore<VideoInterface> {
   constructor() {
-    super('./storage/database/videos.db')
+    super('videos.db')
   }
 
   public attachAPIValue(db?: VideoInterface, api?: YoutubeVideoInterface): VideoInterface {

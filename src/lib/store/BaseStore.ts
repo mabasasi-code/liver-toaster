@@ -1,12 +1,15 @@
+import path from 'path'
 import nedb from 'nedb-promises'
 import VideoInterface from '../interface/database/VideoInterface'
+import config from '../../config/Index'
 
 export default class BaseStore<T> {
   private store: nedb
 
   constructor(filename: string) {
+    const filePath = path.join(config.databasePath, filename)
     const store = nedb.create({
-      filename: filename,
+      filename: filePath,
       timestampData: true,
       autoload: true,
     })
