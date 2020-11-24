@@ -21,7 +21,7 @@ export default class Scheduler {
     // // db から処理対象っぽい動画を全部取り出す
     const videos = await VideoStore.find({ notifyEnd: false })
     if (videos.length > 0) {
-      await VideoProcess.execByVideos(videos)
+      await VideoProcess.processByVideos(videos)
     }
   }
 }

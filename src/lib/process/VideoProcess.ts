@@ -6,7 +6,7 @@ import ArrayToObject from "../util/ArrayToObject";
 
 // TODO: まとめたい
 export default class VideoProcess {
-  public static async execByVideos(videos: VideoInterface[]) {
+  public static async processByVideos(videos: VideoInterface[]) {
     if (!videos || videos.length === 0) throw new ReferenceError('No video IDs')
 
     const videoIds = videos.map(e => e.videoId)
@@ -14,7 +14,7 @@ export default class VideoProcess {
     await this.exec(videoIds, videos)
   }
 
-  public static async execById(videoId: string) {
+  public static async processById(videoId: string) {
     if (!videoId) throw new ReferenceError('No video ID')
 
     const dbVideo = await VideoStore.findOne({ videoId: videoId })
