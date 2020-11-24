@@ -7,30 +7,27 @@ import ArrayToObject from "../util/ArrayToObject";
 // TODO: まとめたい
 export default class VideoProcess {
   public static async execByVideos(videos: VideoInterface[]) {
-    const videoIds = videos.map(e => e.videoId)
-    Log.info('> videoIds: ' + JSON.stringify(videoIds))
+    if (!videos || videos.length === 0) throw new ReferenceError('No video IDs')
 
-    if (!videos || videos.length === 0) {
-      throw new ReferenceError('No video IDs')
-    }
+    const videoIds = videos.map(e => e.videoId)
 
     await this.exec(videoIds, videos)
   }
 
   public static async execById(videoId: string) {
-    Log.info('> videoId: ' + videoId)
-    if (!videoId) {
-      throw new ReferenceError('No video ID')
-    }
+    if (!videoId) throw new ReferenceError('No video ID')
 
     const dbVideo = await VideoStore.findOne({ videoId: videoId })
+    const dbVideos = dbVideo ? [dbVideo] : null
 
-    await this.exec([videoId], [dbVideo])
+    await this.exec([videoId], dbVideos)
   }
 
   ///
 
-  protected static async exec(videoIds: string[], videos: VideoInterface[] = []) {
+  protected static async exec(videoIds: string[], videos?: VideoInterface[] ) {
+    Log.info('> videoIds: ' + JSON.stringify(videoIds))
+
     // api を叩く (return map)
     const apiVideos = await YoutubeAPI.fetchVideoList(videoIds)
     if (!apiVideos) {
