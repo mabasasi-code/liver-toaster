@@ -4,7 +4,9 @@ import dateformat from 'dateformat'
 import chalk from 'chalk'
 
 const LOG_LEVEL = process.env.LOG_LEVEL || 'ALL' // DEBUG: TRACE or DEBUG, PRODUCTION: INFO or OFF
-const FILENAME = process.env.NODE_ENV || 'develop'
+const COMMON_FILENAME = process.env.NODE_ENV || 'develop'
+
+const MEGABYTE = 1024 * 1024
 
 const levelColors = {
   TRACE: { meta: 'grey', body: 'grey', trace: null },
@@ -56,14 +58,40 @@ log4js.addLayout('origin', function({ addColor }) {
 log4js.configure({
   appenders: {
     out: { type: 'stdout', layout: { type: 'origin', addColor: true } },
-    logFile: { type: 'file', filename: `storage/logs/${FILENAME}.log`, layout: { type: 'origin', addColor: false } },
-    errFile: { type: 'file', filename: 'storage/logs/error.log', layout: { type: 'origin', addColor: false } },
+    logFile: {
+      type: 'file',
+      filename: `storage/logs/${COMMON_FILENAME}.log`,
+      pattern: 'yyyy-MM-dd',
+      alwaysIncludePattern: true,
+      daysToKeep: 5,
+      backups: 1,
+      keepFileExt: true,
+      layout: { type: 'origin', addColor: false },
+    },
+    errFile: {
+      type: 'file',
+      filename: 'storage/logs/error.log',
+      maxLogSize: MEGABYTE,
+      backups: 1,
+      keepFileExt: true,
+      layout: { type: 'origin', addColor: false },
+    },
+    recordFile: {
+      type: 'file',
+      filename: 'storage/logs/record.log',
+      maxLogSize: MEGABYTE,
+      backups: 1,
+      keepFileExt: true,
+      layout: { type: 'origin', addColor: false },
+    },
     log: { type: 'logLevelFilter', appender: 'logFile', level: LOG_LEVEL }, // レベルを default と揃える
     err: { type: 'logLevelFilter', appender: 'errFile', level: 'warn' },
   },
   categories: {
-    default: { appenders: ['out', 'log', 'err'], level: LOG_LEVEL, enableCallStack: true }
+    default: { appenders: ['out', 'log', 'err'], level: LOG_LEVEL, enableCallStack: true },
+    record: { appenders: ['recordFile'], level: 'ALL', enableCallStack: true },
   }
 })
 
 export const Log = log4js.getLogger()
+export const Record = log4js.getLogger('record') // dump 用
