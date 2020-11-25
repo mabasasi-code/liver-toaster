@@ -10,6 +10,7 @@ export default interface VideoInterface {
   scheduledEndTime?: string
   actualStartTime?: string
   actualEndTime?: string
+  thumbnailUrl?: string
 
   notifySchedule: boolean
   notifyStart: boolean

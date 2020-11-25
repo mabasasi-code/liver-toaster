@@ -24,6 +24,12 @@ export default class Video extends BaseStore<VideoInterface> {
       actualStartTime: get(api, 'liveStreamingDetails.actualStartTime'),
       actualEndTime: get(api, 'liveStreamingDetails.actualEndTime'),
 
+      thumbnailUrl: get(api, 'snippet.thumbnails.maxers.url')
+        || get(api, 'snippet.thumbnails.standard.url')
+        || get(api, 'snippet.thumbnails.high.url')
+        || get(api, 'snippet.thumbnails.medium.url')
+        || get(api, 'snippet.thumbnails.default.url'),
+
       notifyStart: get(db, 'notifyStart') || false,
       notifySchedule: get(db, 'notifySchedule') || false,
       notifyEnd: get(db, 'notifyEnd') || false,
