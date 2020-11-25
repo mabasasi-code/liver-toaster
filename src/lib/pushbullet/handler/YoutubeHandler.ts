@@ -1,4 +1,4 @@
-import { Log, Record } from "../../../logger/Logger";
+import { NotifyLog, RecordLog } from "../../../logger/Logger";
 import PushInterface from "../../interface/pushbullet/PushInterface";
 import BasePushHandler from "./BasePushHandler";
 import BaseYoutubeHandler from "./youtube/BaseYoutubeHandler";
@@ -27,7 +27,7 @@ export class YoutubeHandler extends BasePushHandler {
 
   public async handle(push: PushInterface): Promise<void> {
     // youtube はとりあえず dump しておく
-    Record.trace(JSON.stringify(push))
+    RecordLog.trace(JSON.stringify(push))
 
     // 先頭からどれか一つ実行する (try-catch も上位に任せる)
     for (const handler of this.handlers) {
@@ -38,6 +38,6 @@ export class YoutubeHandler extends BasePushHandler {
       }
     }
 
-    Log.debug('> no handling')
+    NotifyLog.debug('> no handling')
   }
 }

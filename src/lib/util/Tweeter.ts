@@ -1,8 +1,8 @@
 import dateformat from 'dateformat'
 import diffDates from 'diff-dates'
 import { TwitterAPI } from '../../bootstrap';
-import VideoInterface from '../interface/database/VideoInterface';
 import { Log } from '../../logger/Logger';
+import VideoInterface from '../interface/database/VideoInterface';
 
 export default class Tweeter {
   public static async testNotify() {
@@ -77,8 +77,8 @@ export default class Tweeter {
 
   protected static async tweet (text: string) {
     const tweet = await TwitterAPI.postTweet(text)
-    const stub = TwitterAPI.isStubMode() ? '(stub)' : ''
-    Log.info(`> tweet ${stub}\n${tweet.text} [EOL]`)
+    const stub = TwitterAPI.isStubMode() ? ' (stub)' : ''
+    Log.info(`> tweet${stub}\n${tweet.text} [EOL]`)
   }
 
   protected static stringEscape (text: string, limit: number = 100): string {

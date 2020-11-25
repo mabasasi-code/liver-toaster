@@ -1,32 +1,46 @@
 import { VideoStore, YoutubeAPI } from "../../bootstrap";
 import VideoInterface from "../interface/database/VideoInterface";
-import { Log } from "../../logger/Logger";
 import Tweeter from "../util/Tweeter";
 import ArrayToObject from "../util/ArrayToObject";
+import { Logger } from "log4js";
 
 // TODO: まとめたい
 export default class VideoProcess {
-  public static async processByVideos(videos: VideoInterface[]) {
+  protected logger: Logger
+  protected force: boolean
+
+  constructor (logger: Logger, force: boolean = false) {
+    this.logger = logger
+    this.force = force
+  }
+
+  public async normalize() {
+    this.logger.info('> db normalize')
+
+    // 全データを取得する
+  }
+
+  public async updateByVideos(videos: VideoInterface[]) {
     if (!videos || videos.length === 0) throw new ReferenceError('No video IDs')
 
     const videoIds = videos.map(e => e.videoId)
 
-    await this.exec(videoIds, videos)
+    await this.update(videoIds, videos)
   }
 
-  public static async processById(videoId: string) {
+  public async updateById(videoId: string) {
     if (!videoId) throw new ReferenceError('No video ID')
 
     const dbVideo = await VideoStore.findOne({ videoId: videoId })
     const dbVideos = dbVideo ? [dbVideo] : null
 
-    await this.exec([videoId], dbVideos)
+    await this.update([videoId], dbVideos)
   }
 
-  ///
+  /// /////
 
-  protected static async exec(videoIds: string[], videos?: VideoInterface[] ) {
-    Log.info('> videoIds: ' + JSON.stringify(videoIds))
+  protected async update(videoIds: string[], videos: VideoInterface[] = null) {
+    this.logger.info('> videoIds: ' + JSON.stringify(videoIds))
 
     // api を叩く (return map)
     const apiVideos = await YoutubeAPI.fetchVideoList(videoIds)
@@ -48,7 +62,7 @@ export default class VideoProcess {
 
     // それぞれの処理
     for (const mergeVideo of mergeVideos) {
-      Log.trace('> videoId: ' + mergeVideo.videoId)
+      this.logger.trace('> videoId: ' + mergeVideo.videoId)
       // 通知などを実行
       const resVideo = await this.videoNotify(mergeVideo)
 
@@ -56,14 +70,14 @@ export default class VideoProcess {
       await VideoStore.upsert(resVideo)
     }
 
-    Log.debug('> success!')
+    this.logger.debug('> success!')
   }
 
-  protected static async videoNotify(video: VideoInterface, force: boolean = false) {
+  protected async videoNotify(video: VideoInterface) {
     // 配信が始まってなくて、予定ツイをしてなさそうならする
     if (!video.actualStartTime && !video.actualEndTime) {
-      Log.debug(`> [${video.videoId}] schedule stream (tweet: ${video.notifySchedule})`)
-      if (!video.notifySchedule || force) {
+      this.logger.debug(`> [${video.videoId}] schedule stream (tweet: ${video.notifySchedule})`)
+      if (!video.notifySchedule || this.force) {
         await Tweeter.scheduleStreaming(video)
         video.notifySchedule = true
       }
@@ -71,8 +85,8 @@ export default class VideoProcess {
 
     // 配信中で、開始ツイをしてなさそうならする
     if (video.actualStartTime && !video.actualEndTime) {
-      Log.debug(`> [${video.videoId}] live streaming (tweet: ${video.notifyStart})`)
-      if (!video.notifyStart || force) {
+      this.logger.debug(`> [${video.videoId}] live streaming (tweet: ${video.notifyStart})`)
+      if (!video.notifyStart || this.force) {
         await Tweeter.startLiveStreaming(video)
         video.notifyStart = true
       }
@@ -80,8 +94,8 @@ export default class VideoProcess {
 
     // 配信が終わってて、終了ツイをしてなさそうならする
     if (video.actualStartTime && video.actualEndTime) {
-      Log.debug(`> [${video.videoId}] archive stream (tweet: ${video.notifyEnd})`)
-      if (!video.notifyEnd || force) {
+      this.logger.debug(`> [${video.videoId}] archive stream (tweet: ${video.notifyEnd})`)
+      if (!video.notifyEnd || this.force) {
         await Tweeter.endLiveStreaming(video)
         video.notifyEnd = true
       }

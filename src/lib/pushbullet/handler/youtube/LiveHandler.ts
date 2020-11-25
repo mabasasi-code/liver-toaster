@@ -1,12 +1,19 @@
 import config from '../../../../config'
 import PushInterface from "../../../interface/pushbullet/PushInterface"
-import { Log } from '../../../../logger/Logger'
+import { NotifyLog } from '../../../../logger/Logger'
 import VideoProcess from '../../../process/VideoProcess'
 import BashYoutubeHandler from "./BaseYoutubeHandler"
 
 export default class LiveHandler extends BashYoutubeHandler {
   public readonly TITLE_PREFIX = '🔴 '
   public readonly TITLE_SCHEDULE_PREFIX = '🔴 30 分後に '
+
+  protected process: VideoProcess
+
+  constructor () {
+    super()
+    this.process = new VideoProcess(NotifyLog)
+  }
 
   public isValid(push: PushInterface): boolean {
     const title = push.title || ''
@@ -23,11 +30,11 @@ export default class LiveHandler extends BashYoutubeHandler {
 
   public async handle(push: PushInterface): Promise<void> {
     if (push.title.startsWith(this.TITLE_SCHEDULE_PREFIX)) {
-      Log.debug('> live schedule notify')
-      await VideoProcess.processById(push.notification_tag)
+      NotifyLog.debug('> live schedule notify')
+      await this.process.updateById(push.notification_tag)
     } else {
-      Log.debug('> live start notify')
-      await VideoProcess.processById(push.notification_tag)
+      NotifyLog.debug('> live start notify')
+      await this.process.updateById(push.notification_tag)
     }
   }
 }

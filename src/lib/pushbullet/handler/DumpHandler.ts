@@ -1,6 +1,6 @@
 import config from "../../../config/Index";
 import PushInterface from "../../interface/pushbullet/PushInterface";
-import { Log } from "../../../logger/Logger";
+import { NotifyLog } from "../../../logger/Logger";
 import BasePushHandler from "./BasePushHandler";
 
 export default class DumpHandler extends BasePushHandler {
@@ -18,7 +18,7 @@ export default class DumpHandler extends BasePushHandler {
     const title = push.title || 'unknown message'
     const text = push.body ? ': ' + this.simpleString(push.body, 80) : ''
 
-    Log.info(`[${device}][${packageName}][${type}] ${title}${text}`)
+    NotifyLog.info(`[${device}][${packageName}][${type}] ${title}${text}`)
   }
 
   ///
