@@ -1,6 +1,6 @@
 import path from 'path'
 import nedb from 'nedb-promises'
-import config from '../../config/Index'
+import config from '../../config/config'
 
 export default class BaseStore<T> {
   private store: nedb

@@ -1,4 +1,4 @@
-import config from '../../../config'
+import config from '../../../config/config'
 import PushInterface from "../../interface/pushbullet/PushInterface"
 import { NotifyLog } from '../../../logger/Logger'
 import VideoProcess from '../../process/VideoProcess'

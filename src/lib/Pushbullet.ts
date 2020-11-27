@@ -5,7 +5,7 @@ import { Log } from '../logger/Logger'
 import MessageHandler from './MessageHandler'
 import { TwitterAPI } from '../bootstrap'
 import UserInterface from './interface/pushbullet/UserInterface'
-import config from '../config/Index'
+import config from '../config/config'
 import Scheduler from './Scheduler'
 
 export default class Pushbullet {

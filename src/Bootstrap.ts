@@ -1,5 +1,5 @@
 
-import config from "./config/Index"
+import config from "./config/config"
 import Twitter from "./lib/api/Twitter";
 import Youtube from "./lib/api/Youtube";
 import Pushbullet from "./lib/Pushbullet";

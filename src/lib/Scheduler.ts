@@ -4,8 +4,8 @@ import { VideoStore } from '../bootstrap'
 import { CronLog } from '../logger/Logger'
 import FeedProcess from './process/FeedProcess'
 import VideoProcess from './process/VideoProcess'
-import config from '../config/Index'
-import { filterSeries, mapSeries } from 'p-iteration'
+import config from '../config/config'
+import { filterSeries } from 'p-iteration'
 
 export default class Scheduler {
   protected videoProcess: VideoProcess

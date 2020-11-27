@@ -1,4 +1,4 @@
-import config from "../../config/Index";
+import config from "../../config/config";
 import PushInterface from "../interface/pushbullet/PushInterface";
 import { Log } from "../../logger/Logger";
 import Tweeter from "../util/Tweeter";

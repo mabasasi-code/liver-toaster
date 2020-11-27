@@ -1,4 +1,4 @@
-import config from '../../../config'
+import config from '../../../config/config'
 import { Log } from '../../../logger/Logger'
 import PushInterface from "../../interface/pushbullet/PushInterface"
 import Tweeter from '../../util/Tweeter'

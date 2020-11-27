@@ -1,4 +1,4 @@
-import config from "../../config/Index";
+import config from "../../config/config";
 import PushInterface from "../interface/pushbullet/PushInterface";
 import { NotifyLog } from "../../logger/Logger";
 import BasePushHandler from "./BasePushHandler";
