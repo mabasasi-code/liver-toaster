@@ -1,7 +1,7 @@
-import config from "../../../config/Index";
-import PushInterface from "../../interface/pushbullet/PushInterface";
-import { Log } from "../../../logger/Logger";
-import Tweeter from "../../util/Tweeter";
+import config from "../../config/Index";
+import PushInterface from "../interface/pushbullet/PushInterface";
+import { Log } from "../../logger/Logger";
+import Tweeter from "../util/Tweeter";
 import BasePushHandler from "./BasePushHandler";
 
 export default class TestHandler extends BasePushHandler {

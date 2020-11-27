@@ -1,7 +1,7 @@
-import config from '../../../../config'
-import PushInterface from "../../../interface/pushbullet/PushInterface"
-import { NotifyLog } from '../../../../logger/Logger'
-import VideoProcess from '../../../process/VideoProcess'
+import config from '../../../config'
+import PushInterface from "../../interface/pushbullet/PushInterface"
+import { NotifyLog } from '../../../logger/Logger'
+import VideoProcess from '../../process/VideoProcess'
 import BashYoutubeHandler from "./BaseYoutubeHandler"
 
 export default class LiveHandler extends BashYoutubeHandler {

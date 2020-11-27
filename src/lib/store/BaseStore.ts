@@ -1,6 +1,5 @@
 import path from 'path'
 import nedb from 'nedb-promises'
-import VideoInterface from '../interface/database/VideoInterface'
 import config from '../../config/Index'
 
 export default class BaseStore<T> {

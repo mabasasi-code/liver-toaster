@@ -1,6 +1,6 @@
-import config from "../../../config/Index";
-import PushInterface from "../../interface/pushbullet/PushInterface";
-import { NotifyLog } from "../../../logger/Logger";
+import config from "../../config/Index";
+import PushInterface from "../interface/pushbullet/PushInterface";
+import { NotifyLog } from "../../logger/Logger";
 import BasePushHandler from "./BasePushHandler";
 
 export default class DumpHandler extends BasePushHandler {

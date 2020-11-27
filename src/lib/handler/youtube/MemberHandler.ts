@@ -1,7 +1,7 @@
-import config from '../../../../config'
-import { Log } from '../../../../logger/Logger'
-import PushInterface from "../../../interface/pushbullet/PushInterface"
-import Tweeter from '../../../util/Tweeter'
+import config from '../../../config'
+import { Log } from '../../../logger/Logger'
+import PushInterface from "../../interface/pushbullet/PushInterface"
+import Tweeter from '../../util/Tweeter'
 import BashYoutubeHandler from "./BaseYoutubeHandler"
 
 export default class MemberHandler extends BashYoutubeHandler {

@@ -1,11 +1,11 @@
-import { NotifyLog, RecordLog } from "../../../logger/Logger";
-import PushInterface from "../../interface/pushbullet/PushInterface";
+import { NotifyLog, RecordLog } from "../../logger/Logger";
+import PushInterface from "../interface/pushbullet/PushInterface";
 import BasePushHandler from "./BasePushHandler";
 import BaseYoutubeHandler from "./youtube/BaseYoutubeHandler";
 import LiveHandler from "./youtube/LiveHandler";
 import MemberHandler from "./youtube/MemberHandler";
 
-export class YoutubeHandler extends BasePushHandler {
+export default class YoutubeHandler extends BasePushHandler {
   public readonly YOUTUBE_PACKAGE_NAME = 'com.google.android.youtube'
 
   private handlers: BaseYoutubeHandler[]

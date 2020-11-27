@@ -2,7 +2,7 @@
 import config from "./config/Index"
 import Twitter from "./lib/api/Twitter";
 import Youtube from "./lib/api/Youtube";
-import Pushbullet from "./lib/pushbullet/Pushbullet";
+import Pushbullet from "./lib/Pushbullet";
 import Scheduler from "./lib/Scheduler";
 import Video from "./lib/store/Video";
 
@@ -33,7 +33,4 @@ export default async () => {
     config.pushbullet.accessToken,
     config.pushbullet.encryptionKey
   )
-
-  SchedulerInstance = new Scheduler()
 }
-
