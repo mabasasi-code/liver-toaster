@@ -3,38 +3,36 @@ import VideoInterface from "../interface/database/VideoInterface";
 import Tweeter from "../util/Tweeter";
 import ArrayToObject from "../util/ArrayToObject";
 import { Logger } from "log4js";
+import { mapSeries } from "p-iteration";
 
-// TODO: まとめたい
 export default class VideoProcess {
   protected logger: Logger
-  protected force: boolean
+  protected forceTweet: boolean
 
   constructor (logger: Logger, force: boolean = false) {
     this.logger = logger
-    this.force = force
+    this.forceTweet = force
   }
 
-  public async normalize() {
-    this.logger.info('> db normalize')
+  public async updateById(videoId: string) {
+    return await this.updateByIds([videoId])
+  }
 
-    // 全データを取得する
+  public async updateByIds(videoIds: string[]) {
+    if (!videoIds) throw new ReferenceError('No video IDs')
+
+    const dbVideos = await mapSeries(videoIds, async (id) => {
+      const video = await VideoStore.findOne({ videoId: id })
+      return video
+    })
+    await this.update(videoIds, dbVideos)
   }
 
   public async updateByVideos(videos: VideoInterface[]) {
     if (!videos || videos.length === 0) throw new ReferenceError('No video IDs')
 
     const videoIds = videos.map(e => e.videoId)
-
     await this.update(videoIds, videos)
-  }
-
-  public async updateById(videoId: string) {
-    if (!videoId) throw new ReferenceError('No video ID')
-
-    const dbVideo = await VideoStore.findOne({ videoId: videoId })
-    const dbVideos = dbVideo ? [dbVideo] : null
-
-    await this.update([videoId], dbVideos)
   }
 
   /// /////
@@ -77,7 +75,7 @@ export default class VideoProcess {
     // 配信が始まってなくて、予定ツイをしてなさそうならする
     if (!video.actualStartTime && !video.actualEndTime) {
       this.logger.debug(`> [${video.videoId}] schedule stream (tweet: ${video.notifySchedule})`)
-      if (!video.notifySchedule || this.force) {
+      if (!video.notifySchedule || this.forceTweet) {
         await Tweeter.scheduleStreaming(video)
         video.notifySchedule = true
       }
@@ -86,7 +84,7 @@ export default class VideoProcess {
     // 配信中で、開始ツイをしてなさそうならする
     if (video.actualStartTime && !video.actualEndTime) {
       this.logger.debug(`> [${video.videoId}] live streaming (tweet: ${video.notifyStart})`)
-      if (!video.notifyStart || this.force) {
+      if (!video.notifyStart || this.forceTweet) {
         await Tweeter.startLiveStreaming(video)
         video.notifyStart = true
       }
@@ -95,7 +93,7 @@ export default class VideoProcess {
     // 配信が終わってて、終了ツイをしてなさそうならする
     if (video.actualStartTime && video.actualEndTime) {
       this.logger.debug(`> [${video.videoId}] archive stream (tweet: ${video.notifyEnd})`)
-      if (!video.notifyEnd || this.force) {
+      if (!video.notifyEnd || this.forceTweet) {
         await Tweeter.endLiveStreaming(video)
         video.notifyEnd = true
       }
