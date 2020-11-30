@@ -35,7 +35,7 @@ export default class Tweeter {
 
     const lines = [
       dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
-      '🌾「配信予定だよ！」',
+      '🌾「📅 配信予定だよ！」',
       this.stringEscape(video.title || '-タイトル不明-', 80),
       this.timeString(video.scheduledStartTime),
       url,
