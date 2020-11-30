@@ -14,6 +14,10 @@ export default class Video extends BaseStore<VideoInterface> {
     return super.upsert({ videoId: videoId }, value)
   }
 
+  public async findIncomplete() {
+    return await this.find({ notifyEnd: false, deletedAt: null })
+  }
+
   public attachAPIValue(db?: VideoInterface, api?: YoutubeVideoInterface): VideoInterface {
     const base: VideoInterface = {
       videoId: get(api, 'id'),

@@ -4,6 +4,7 @@ import Tweeter from "../util/Tweeter";
 import ArrayToObject from "../util/ArrayToObject";
 import { Logger } from "log4js";
 import { mapSeries } from "p-iteration";
+import DeleteVideoInterface from "../interface/database/DeleteVideoInterface";
 
 export default class VideoProcess {
   protected logger: Logger
@@ -50,25 +51,52 @@ export default class VideoProcess {
     const dbVideos = ArrayToObject<VideoInterface>(videoIds, videos, (e) => e.videoId)
 
     // 値を結合する (DB <<= API)
-    // TODO: 削除処理
     const mergeVideos = videoIds.map(videoId => {
-      const db = dbVideos[videoId]
-      const api = apiVideos[videoId] || null
+      const db = dbVideos[videoId] || null // null なら db に存在しない
+      const api = apiVideos[videoId] || null // null なら動画が無い or 削除
+
+      // 削除時処理 (db にあるかで処理が変わる)
+      if (!api) {
+        if (db) {
+          db.deletedAt = new Date()
+          return db
+        }
+        return { videoId: videoId, deletedAt: new Date(), isDelete: true } // 削除用スタブ
+      }
+
       const merge = VideoStore.attachAPIValue(db, api) // null なら新規作成される
+      merge.deletedAt = null // 削除フラグを消しとく
       return merge
     })
+    // end 値結合 //////////
 
     // それぞれの処理
     for (const mergeVideo of mergeVideos) {
       this.logger.trace('> videoId: ' + mergeVideo.videoId)
-      // 通知などを実行
-      const resVideo = await this.videoNotify(mergeVideo)
 
-      // DB に保存
-      await VideoStore.upsert(resVideo)
+      // 通知などを実行
+      if ('isDelete' in mergeVideo || mergeVideo.deletedAt) {
+        const res = await this.videoRemove(mergeVideo)
+      } else {
+        const res = await this.videoNotify(mergeVideo)
+      }
     }
 
     this.logger.debug('> success!')
+  }
+
+  protected async videoRemove(video: VideoInterface | DeleteVideoInterface) {
+    // もし削除されてたらDBから消す
+    if (video.deletedAt) {
+      const hasDB = ('_id' in video && video._id)
+      this.logger.debug(`> [${video.videoId}] Deleted video (DB: ${hasDB})`)
+      // 通知は今のとこ off
+      if ('_id' in video) {
+        return await VideoStore.upsert(video) // 削除されたことを記録しておく
+      }
+    }
+
+    return video
   }
 
   protected async videoNotify(video: VideoInterface) {
@@ -78,6 +106,7 @@ export default class VideoProcess {
       if (!video.notifySchedule || this.forceTweet) {
         await Tweeter.scheduleStreaming(video)
         video.notifySchedule = true
+        return await VideoStore.upsert(video)
       }
     }
 
@@ -87,6 +116,7 @@ export default class VideoProcess {
       if (!video.notifyStart || this.forceTweet) {
         await Tweeter.startLiveStreaming(video)
         video.notifyStart = true
+        return await VideoStore.upsert(video)
       }
     }
 
@@ -96,6 +126,7 @@ export default class VideoProcess {
       if (!video.notifyEnd || this.forceTweet) {
         await Tweeter.endLiveStreaming(video)
         video.notifyEnd = true
+        return await VideoStore.upsert(video)
       }
     }
 

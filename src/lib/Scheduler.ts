@@ -74,7 +74,7 @@ export default class Scheduler {
   public async checkVideos() {
     try {
       // db から処理対象っぽい動画を全部取り出す
-      const videos = await VideoStore.find({ notifyEnd: false })
+      const videos = await VideoStore.findIncomplete()
       if (videos.length > 0) {
         await this.videoProcess.updateByVideos(videos)
       } else {

@@ -2,7 +2,7 @@ import path from 'path'
 import nedb from 'nedb-promises'
 import config from '../../config/config'
 
-export default class BaseStore<T> {
+export default class BaseStore<T extends { _id?: any }> {
   private store: nedb
 
   constructor(filename: string) {
@@ -32,5 +32,14 @@ export default class BaseStore<T> {
       { upsert: true, returnUpdatedDocs: true }
     )
     return res
+  }
+
+  public async remove(value: T) {
+    await this.store.remove({ _id: value._id }, {})
+    return value
+  }
+
+  public async reload() {
+    await this.store.load()
   }
 }

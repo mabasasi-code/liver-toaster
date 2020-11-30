@@ -16,6 +16,7 @@ export default interface VideoInterface {
   notifyStart: boolean
   notifyEnd: boolean
 
-  createdAt?: Date
-  updatedAt?: Date
+  createdAt?: Date // system
+  updatedAt?: Date // system
+  deletedAt?: Date
 }
