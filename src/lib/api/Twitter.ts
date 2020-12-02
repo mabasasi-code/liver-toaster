@@ -32,9 +32,9 @@ export default class Twitter {
     return user
   }
 
-  public async postTweet(text: string): Promise<TweetInterface | null> {
+  public async postTweet(text: string, stubMode: boolean = false): Promise<TweetInterface | null> {
     // stub モードなら呟いたつもり
-    if (this.stubMode) {
+    if (this.stubMode || stubMode) {
       const tweet: TweetInterface = {
         created_at: new Date().toString(),
         id_str: '0000000000000000000',

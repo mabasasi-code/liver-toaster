@@ -21,14 +21,24 @@ export default class Scheduler {
   }
 
   public async run(): Promise<void> {
+    CronLog.info('Database normalize')
+    await this.checkVideos()
+    await this.checkFeed()
+
     const job = schedule.scheduleJob('*/10 * * * *', async (date: Date) => {
       try {
-        // 5 分おきに処理をする
+        // 10 分おきに処理をする
         CronLog.info('run: ' + dateformat(date, 'yyyy-mm-dd HH:MM:ss'))
         await this.checkVideos()
 
         // feed を拾ってくる
         await this.checkFeed()
+
+
+        // 半日に一回名寄せする
+        if (date.getHours() === 4) {
+          await this.databaseNormalize()
+        }
 
       } catch (err) {
         CronLog.error(err)
@@ -36,6 +46,7 @@ export default class Scheduler {
     })
 
     this.jobs.push(job)
+    CronLog.info('Run schedule jobs...')
   }
 
   public async stop() {
@@ -46,6 +57,15 @@ export default class Scheduler {
   }
 
   ///
+
+  public async databaseNormalize() {
+    try {
+      CronLog.debug('> DB normalize')
+      await VideoStore.reload()
+    } catch (err) {
+      CronLog.error(err)
+    }
+  }
 
   public async checkFeed() {
     try {

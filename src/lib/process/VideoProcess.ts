@@ -8,11 +8,9 @@ import DeleteVideoInterface from "../interface/database/DeleteVideoInterface";
 
 export default class VideoProcess {
   protected logger: Logger
-  protected forceTweet: boolean
 
-  constructor (logger: Logger, force: boolean = false) {
+  constructor (logger: Logger) {
     this.logger = logger
-    this.forceTweet = force
   }
 
   public async updateById(videoId: string) {
@@ -85,6 +83,8 @@ export default class VideoProcess {
     this.logger.debug('> success!')
   }
 
+  ///
+
   protected async videoRemove(video: VideoInterface | DeleteVideoInterface) {
     // もし削除されてたらDBから消す
     if (video.deletedAt) {
@@ -103,7 +103,7 @@ export default class VideoProcess {
     // 配信が始まってなくて、予定ツイをしてなさそうならする
     if (!video.actualStartTime && !video.actualEndTime) {
       this.logger.debug(`> [${video.videoId}] schedule stream (tweet: ${video.notifySchedule})`)
-      if (!video.notifySchedule || this.forceTweet) {
+      if (!video.notifySchedule) {
         await Tweeter.scheduleStreaming(video)
         video.notifySchedule = true
         return await VideoStore.upsert(video)
@@ -113,7 +113,7 @@ export default class VideoProcess {
     // 配信中で、開始ツイをしてなさそうならする
     if (video.actualStartTime && !video.actualEndTime) {
       this.logger.debug(`> [${video.videoId}] live streaming (tweet: ${video.notifyStart})`)
-      if (!video.notifyStart || this.forceTweet) {
+      if (!video.notifyStart) {
         await Tweeter.startLiveStreaming(video)
         video.notifyStart = true
         return await VideoStore.upsert(video)
@@ -121,10 +121,16 @@ export default class VideoProcess {
     }
 
     // 配信が終わってて、終了ツイをしてなさそうならする
+    // ただし、一度でも呟いたもののみ！！
     if (video.actualStartTime && video.actualEndTime) {
       this.logger.debug(`> [${video.videoId}] archive stream (tweet: ${video.notifyEnd})`)
-      if (!video.notifyEnd || this.forceTweet) {
-        await Tweeter.endLiveStreaming(video)
+      if (!video.notifyEnd) {
+        const isTweeted = video.notifySchedule || video.notifyStart // 一度呟いてるか
+        if (!isTweeted) {
+          this.logger.debug(`> Skip because it is already over`)
+        }
+
+        await Tweeter.endLiveStreaming(video, !isTweeted) // 一度も呟いてなかったらサイレント
         video.notifyEnd = true
         return await VideoStore.upsert(video)
       }

@@ -5,15 +5,15 @@ import { Log } from '../../logger/Logger';
 import VideoInterface from '../interface/database/VideoInterface';
 
 export default class Tweeter {
-  public static async testNotify() {
+  public static async testNotify(isSilent: boolean = false) {
     const lines = [
       dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
       this.stringEscape('通知のテストです')
     ]
-    await this.tweet(lines.join('\n'))
+    await this.tweet(lines.join('\n'), isSilent)
   }
 
-  public static async postMemberCommunity(channelId?: string) {
+  public static async postMemberCommunity(channelId?: string, isSilent: boolean = false) {
     const url = channelId
       ? 'https://www.youtube.com/channel/' + channelId + '/community'
       : '-URL不明-'
@@ -23,12 +23,12 @@ export default class Tweeter {
       '🌾「メンバー限定の投稿があったよ！」',
       url,
     ]
-    await this.tweet(lines.join('\n'))
+    await this.tweet(lines.join('\n'), isSilent)
   }
 
   ///
 
-  public static async scheduleStreaming(video: VideoInterface) {
+  public static async scheduleStreaming(video: VideoInterface, isSilent: boolean = false) {
     const url = video.videoId
       ? 'https://youtu.be/' + video.videoId
       : '-URL不明-'
@@ -40,10 +40,10 @@ export default class Tweeter {
       this.timeString(video.scheduledStartTime),
       url,
     ]
-    await this.tweet(lines.join('\n'))
+    await this.tweet(lines.join('\n'), isSilent)
   }
 
-  public static async startLiveStreaming(video: VideoInterface) {
+  public static async startLiveStreaming(video: VideoInterface, isSilent: boolean = false) {
     const url = video.videoId
       ? 'https://youtu.be/' + video.videoId
       : '-URL不明-'
@@ -55,10 +55,10 @@ export default class Tweeter {
       this.timeString(video.actualStartTime),
       url,
     ]
-    await this.tweet(lines.join('\n'))
+    await this.tweet(lines.join('\n'), isSilent)
   }
 
-  public static async endLiveStreaming(video: VideoInterface) {
+  public static async endLiveStreaming(video: VideoInterface, isSilent: boolean = false) {
     const url = video.videoId
       ? 'https://youtu.be/' + video.videoId
       : '-URL不明-'
@@ -70,13 +70,13 @@ export default class Tweeter {
       this.timeString(video.actualStartTime, video.actualEndTime, true),
       url,
     ]
-    await this.tweet(lines.join('\n'))
+    await this.tweet(lines.join('\n'), isSilent)
   }
 
   ///
 
-  protected static async tweet (text: string) {
-    const tweet = await TwitterAPI.postTweet(text)
+  protected static async tweet (text: string, isSilent: boolean = false) {
+    const tweet = await TwitterAPI.postTweet(text, isSilent)
     const stub = TwitterAPI.isStubMode() ? ' (stub)' : ''
     Log.info(`> tweet${stub}\n${tweet.text} [EOL]`)
   }

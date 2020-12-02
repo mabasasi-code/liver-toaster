@@ -30,6 +30,10 @@ export default class Pushbullet {
     return stream
   }
 
+  public getScheduler() {
+    return this.scheduler
+  }
+
   public async getStream(): Promise<any> {
     return new Promise(async (resolve, reject) => {
       const twuser = await TwitterAPI.getClientUser()

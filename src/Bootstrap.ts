@@ -33,4 +33,6 @@ export default async () => {
     config.pushbullet.accessToken,
     config.pushbullet.encryptionKey
   )
+
+  SchedulerInstance = PushbulletInstance.getScheduler()
 }
