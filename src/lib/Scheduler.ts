@@ -21,14 +21,18 @@ export default class Scheduler {
   }
 
   public async run(): Promise<void> {
-    CronLog.info('Database normalize')
+    if (this.jobs.length > 0) {
+      throw new Error('Job is already running')
+    }
+
+    CronLog.info('Scheduler initialize')
     await this.checkVideos()
     await this.checkFeed()
 
     const job = schedule.scheduleJob('*/10 * * * *', async (date: Date) => {
       try {
         // 10 分おきに処理をする
-        CronLog.info('run: ' + dateformat(date, 'yyyy-mm-dd HH:MM:ss'))
+        CronLog.info('[run] start : ' + dateformat(date, 'yyyy-mm-dd HH:MM:ss'))
         await this.checkVideos()
 
         // feed を拾ってくる
@@ -40,13 +44,14 @@ export default class Scheduler {
           await this.databaseNormalize()
         }
 
+        CronLog.info('[run] finish: ' + dateformat(date, 'yyyy-mm-dd HH:MM:ss'))
       } catch (err) {
         CronLog.error(err)
       }
     })
 
     this.jobs.push(job)
-    CronLog.info('Run schedule jobs...')
+    CronLog.info('Scheduled job has started')
   }
 
   public async stop() {
@@ -59,15 +64,19 @@ export default class Scheduler {
   ///
 
   public async databaseNormalize() {
+    CronLog.debug('DB normalize')
+
     try {
-      CronLog.debug('> DB normalize')
       await VideoStore.reload()
+      CronLog.debug('> Success!')
     } catch (err) {
       CronLog.error(err)
     }
   }
 
   public async checkFeed() {
+    CronLog.debug('Check feed by registered channel')
+
     try {
       // feed から id を抜き出す
       const channelId = config.youtube.channelId
@@ -82,8 +91,9 @@ export default class Scheduler {
 
         if (nonExistIds && nonExistIds.length > 0) {
           await this.videoProcess.updateByIds(nonExistIds)
+          CronLog.debug('> Success!')
         } else {
-          CronLog.debug('> no new feed videos')
+          CronLog.debug('> Skip')
         }
       }
     } catch (err) {
@@ -92,13 +102,16 @@ export default class Scheduler {
   }
 
   public async checkVideos() {
+    CronLog.debug('Check videos in DB')
+
     try {
       // db から処理対象っぽい動画を全部取り出す
       const videos = await VideoStore.findIncomplete()
       if (videos.length > 0) {
         await this.videoProcess.updateByVideos(videos)
+        CronLog.debug('> Success!')
       } else {
-        CronLog.debug('> no to be updated videos')
+        CronLog.debug('> Skip')
       }
     } catch (err) {
       CronLog.error(err)

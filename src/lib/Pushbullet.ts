@@ -50,9 +50,13 @@ export default class Pushbullet {
         // ストリームを開く
         const stream = pusher.stream()
 
-        stream.on('connect', async() => {
-          this.scheduler.run()
-          this.dumpListenLog(user, twuser)
+        stream.on('connect', async () => {
+          try {
+            this.dumpListenLog(user, twuser)
+            await this.scheduler.run()
+          } catch (err) {
+            Log.error(err)
+          }
         })
 
         stream.on('push', async (push: PushInterface) => {
