@@ -25,7 +25,7 @@ export default class Tweeter {
   }
 
   protected async tweet(text: string, inReplyTweetId?: string) {
-    if (config.mode.ignoreTweet) this.isMute = true // env 指定があったら強制ミュート
+    if (config.mode.disableTweet) this.isMute = true // env 指定があったら強制ミュート
 
     let tweet: TweetInterface
     if (!this.isMute) {
@@ -50,18 +50,18 @@ export default class Tweeter {
     await this.tweet(lines.join('\n'))
   }
 
-  // public static async postMemberCommunity(channelId?: string, isSilent: boolean = false) {
-  //   const url = channelId
-  //     ? 'https://www.youtube.com/channel/' + channelId + '/community'
-  //     : '-URL不明-'
+  public async postMemberCommunity(channelId?: string) {
+    const url = channelId
+      ? 'https://www.youtube.com/channel/' + channelId + '/community'
+      : '-URL不明-'
 
-  //   const lines = [
-  //     dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
-  //     '🌾「メンバー限定の投稿があったよ！」',
-  //     url,
-  //   ]
-  //   await this.tweet(lines.join('\n'), isSilent)
-  // }
+    const lines = [
+      dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
+      '🌾「メンバー限定の投稿があったよ！」',
+      url,
+    ]
+    await this.tweet(lines.join('\n'))
+  }
 
   ///
 

@@ -1,6 +1,6 @@
 import { get } from 'dot-prop'
 import { google, youtube_v3 } from 'googleapis'
-import YoutubeVideoInterface from '../interface/youtube/YoutubeVideoInterface'
+import YoutubeVideoInterface from '../../interface/youtube/YoutubeVideoInterface'
 import ArrayToObject from '../util/ArrayToObject'
 
 export default class Youtube {

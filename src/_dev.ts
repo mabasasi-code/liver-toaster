@@ -1,8 +1,6 @@
-import bootstrap, { PushbulletInstance, SchedulerInstance, TwitterAPI, VideoStore, YoutubeAPI } from './bootstrap'
+import bootstrap, { PushbulletInstance, SchedulerInstance, TwitterAPI, YoutubeAPI } from './bootstrap'
 import { promises as fs } from 'fs'
 import Tweeter from './lib/util/Tweeter'
-import VideoProcess from './lib/process/VideoProcess'
-import FeedProcess from './lib/process/FeedProcess'
 import config from './config/config'
 import { Log } from './logger/Logger'
 import Video from './model/Video'
@@ -12,12 +10,11 @@ import UpdateVideoTask from './task/UpdateVideoTask'
 
 const main = async () => {
   await bootstrap()
-  await createConnection()
 
   const videoId = 'sdMK9ACKI2I'
 
   const task = new UpdateVideoTask(YoutubeAPI, Log)
-  await task.updateById(videoId)
+  await task.updateById('NQ8CWY99_pk')
 
 
   // await Video.delete({})

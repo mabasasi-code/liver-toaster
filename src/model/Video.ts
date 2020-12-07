@@ -4,9 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-} from "typeorm";
-import YoutubeVideoInterface from "../lib/interface/youtube/YoutubeVideoInterface";
-import SoftDeleteModel from "./SoftDeleteModel";
+} from 'typeorm';
+import YoutubeVideoInterface from '../interface/youtube/YoutubeVideoInterface';
+import SoftDeleteModel from './SoftDeleteModel';
 
 @Entity('videos')
 export default class Video extends SoftDeleteModel {
@@ -53,7 +53,7 @@ export default class Video extends SoftDeleteModel {
     startTweetId?: string
 
     @Column('text', { nullable: true })
-    endTweetId?: string
+    endTweetId?: string // '0' はダミー終了
 
     ///
 
@@ -63,7 +63,7 @@ export default class Video extends SoftDeleteModel {
     @UpdateDateColumn()
     readonly updatedAt: Date
 
-    ///
+    /// ////////////////////////////////////////////////////////////
     // get
 
     public url(defaultValue: any = null) {

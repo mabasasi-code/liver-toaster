@@ -1,6 +1,6 @@
 import TwitterAPI from 'twitter-lite'
-import TweetInterface from '../interface/twitter/TweetInterface'
-import UserInterface from '../interface/twitter/UserInterface'
+import TweetInterface from '../../interface/twitter/TweetInterface'
+import UserInterface from '../../interface/twitter/UserInterface'
 
 export default class Twitter {
   private client: TwitterAPI

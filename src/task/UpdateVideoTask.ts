@@ -1,5 +1,6 @@
 import { Logger } from 'log4js'
 import { mapSeries } from 'p-iteration'
+import { IsNull } from 'typeorm'
 import Youtube from '../lib/api/Youtube'
 import ArrayToObject from '../lib/util/ArrayToObject'
 import Video from '../model/Video'
@@ -21,25 +22,35 @@ export default class UpdateVideoTask {
   // feedからメイン
   public async updateByIds(videoIds: string[]) {
     const dbVideos = await mapSeries(videoIds, async (id) => {
-      const video = await Video.findOne({ videoId: id }, { withDeleted: true })
+      const video = await Video.findOne({ videoId: id })
       return video
     })
     await this.update(videoIds, dbVideos)
   }
 
   // スケジューラーからメイン
+  public async updateMonitoringVideos() {
+    // db から処理対象っぽい動画を全部取り出す
+    const dbVideos = await Video.find({ endTweetId: IsNull(), deletedAt: IsNull() })
+    await this.updateByVideos(dbVideos)
+  }
+
+  /// ////////////////////////////////////////////////////////////
+
   public async updateByVideos(videos: Video[]) {
     const videoIds = videos.map(e => e.videoId)
     await this.update(videoIds, videos)
   }
 
-  /// ////////////////////////////////////////////////////////////
-
   protected async update(videoIds: string[], videos?: Video[]) {
-    this.logger.info('> videoIds: ' + JSON.stringify(videoIds))
+    this.logger.debug(`> Update videos: (${videoIds.length}) ` + JSON.stringify(videoIds))
+    if (videoIds.length === 0) {
+      this.logger.debug('> Skip')
+      return
+    }
 
     // api を叩く (return { videoId: item | null })
-    const apiVideos = {} // await this.youtube.fetchVideoList(videoIds)
+    const apiVideos = await this.youtube.fetchVideoList(videoIds)
     if (!apiVideos) {
       throw new Error('Youtube API failure')
     }
@@ -73,5 +84,7 @@ export default class UpdateVideoTask {
         }
       }
     }
+
+    this.logger.debug('> Success')
   }
 }

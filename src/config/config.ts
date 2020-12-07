@@ -4,8 +4,8 @@ export default {
 
   mode: {
     testNotify: (process.env.TEST_NOTIFY === 'true'), // true でテスト通知をONに
-    loggingNotify: (process.env.LOGGING_NOTIFY === 'true'), // true で全通知のログ出力
-    ignoreTweet: (process.env.IGNORE_TWEET === 'true'), // true で 呟く代わりに出力する
+    dumpAllNotify: (process.env.DUMP_ALL_NOTIFY === 'true'), // true で全通知のログ出力
+    disableTweet: (process.env.DISABLE_TWEET === 'true'), // true で つぶやきを禁止(ログには出力)
   },
   pushbullet: {
     accessToken: process.env.PUSHBULLET_ACCESS_TOKEN,

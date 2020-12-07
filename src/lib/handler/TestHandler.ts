@@ -24,6 +24,6 @@ export default class TestHandler extends BasePushHandler {
 
   public async handle(push: PushInterface): Promise<void> {
     Log.debug('> test notify')
-    await Tweeter.testNotify()
+    await Tweeter.builder().testNotify()
   }
 }
