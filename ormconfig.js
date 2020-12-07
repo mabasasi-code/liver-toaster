@@ -1,7 +1,7 @@
 
 module.exports = {
   type: 'sqlite',
-  database: process.env.DATABASE_PATH,
+  database: process.env.DATABASE_PATH || './storage/database.sqlite',
   synchronize: true,
   logging: false,
   debug: false,
