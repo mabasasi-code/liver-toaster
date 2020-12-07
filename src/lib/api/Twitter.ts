@@ -1,17 +1,15 @@
 import TwitterAPI from 'twitter-lite'
-import TweetInterface from '../interface/twitter/TweetInterface'
-import UserInterface from '../interface/twitter/UserInterface'
+import TweetInterface from '../../interface/twitter/TweetInterface'
+import UserInterface from '../../interface/twitter/UserInterface'
 
 export default class Twitter {
   private client: TwitterAPI
-  private stubMode: boolean
 
   constructor (
     consumerKey: string,
     consumerSecret: string,
     accessToken: string,
     accessTokenSecret: string,
-    stubMode: boolean = false,
   ) {
     const client = new TwitterAPI({
       consumer_key: consumerKey,
@@ -20,11 +18,6 @@ export default class Twitter {
       access_token_secret: accessTokenSecret,
     })
     this.client = client
-    this.stubMode = stubMode
-  }
-
-  public isStubMode() {
-    return this.stubMode
   }
 
   public async getClientUser(): Promise<UserInterface | null> {
@@ -32,24 +25,14 @@ export default class Twitter {
     return user
   }
 
-  public async postTweet(text: string, stubMode: boolean = false): Promise<TweetInterface | null> {
-    // stub モードなら呟いたつもり
-    if (this.stubMode || stubMode) {
-      const tweet: TweetInterface = {
-        created_at: new Date().toString(),
-        id_str: '0000000000000000000',
-        text: text,
-        retweet_count: 0,
-        favorite_count: 0,
-        favorited: false,
-        retweeted: false,
-      }
-      return tweet
+  public async postTweet(text: string, inReplyTweetId?: string): Promise<TweetInterface | null> {
+    const params: object = { status: text }
+    if (inReplyTweetId) {
+      params['in_reply_to_status_id'] = inReplyTweetId
+      params['auto_populate_reply_metadata'] = true
     }
 
-    const tweet = await this.client.post('statuses/update', {
-      status: text,
-    });
+    const tweet = await this.client.post('statuses/update', params);
     return tweet
   }
 }

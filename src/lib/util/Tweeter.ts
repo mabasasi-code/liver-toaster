@@ -1,19 +1,56 @@
 import dateformat from 'dateformat'
 import diffDates from 'diff-dates'
 import { TwitterAPI } from '../../bootstrap';
-import { Log } from '../../logger/Logger';
-import VideoInterface from '../interface/database/VideoInterface';
+import config from '../../config/config';
+import { EventLog } from '../../logger/Logger';
+import Video from '../../model/Video';
+import TweetInterface from '../../interface/twitter/TweetInterface';
 
 export default class Tweeter {
-  public static async testNotify(isSilent: boolean = false) {
+  protected isMute: boolean = false
+
+  public static builder() {
+    return new this()
+  }
+
+  public static silent(isMute: boolean = true) {
+    const inst = this.builder()
+    inst.isMute = isMute
+    return inst
+  }
+
+  public silent(isMute: boolean = true) {
+    this.isMute = isMute
+    return this
+  }
+
+  protected async tweet(text: string, inReplyTweetId?: string) {
+    if (config.mode.disableTweet) this.isMute = true // env 指定があったら強制ミュート
+
+    let tweet: TweetInterface
+    if (!this.isMute) {
+      tweet = await TwitterAPI.postTweet(text, inReplyTweetId)
+    } else {
+      tweet = { id_str: '0', text: text, in_reply_to_status_id_str: inReplyTweetId }
+    }
+
+    const stub = this.isMute ? ' (stub)' : ''
+    EventLog.info(`> tweet${stub}\n${tweet.text} [EOL]`)
+
+    return tweet
+  }
+
+  ///
+
+  public async testNotify() {
     const lines = [
       dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
       this.stringEscape('通知のテストです')
     ]
-    await this.tweet(lines.join('\n'), isSilent)
+    await this.tweet(lines.join('\n'))
   }
 
-  public static async postMemberCommunity(channelId?: string, isSilent: boolean = false) {
+  public async postMemberCommunity(channelId?: string) {
     const url = channelId
       ? 'https://www.youtube.com/channel/' + channelId + '/community'
       : '-URL不明-'
@@ -23,65 +60,46 @@ export default class Tweeter {
       '🌾「メンバー限定の投稿があったよ！」',
       url,
     ]
-    await this.tweet(lines.join('\n'), isSilent)
+    await this.tweet(lines.join('\n'))
   }
 
   ///
 
-  public static async scheduleStreaming(video: VideoInterface, isSilent: boolean = false) {
-    const url = video.videoId
-      ? 'https://youtu.be/' + video.videoId
-      : '-URL不明-'
-
+  public async scheduleStreaming(video: Video) {
     const lines = [
       dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
       '🌾「📅 配信予定だよ！」',
       this.stringEscape(video.title || '-タイトル不明-', 80),
-      this.timeString(video.scheduledStartTime),
-      url,
+      '⏰: ' + this.timeString(video.scheduledStartTime),
+      video.url('-URL不明-'),
     ]
-    await this.tweet(lines.join('\n'), isSilent)
+    return await this.tweet(lines.join('\n'))
   }
 
-  public static async startLiveStreaming(video: VideoInterface, isSilent: boolean = false) {
-    const url = video.videoId
-      ? 'https://youtu.be/' + video.videoId
-      : '-URL不明-'
-
+  public async startLiveStreaming(video: Video) {
     const lines = [
       dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
       '🌾「🔴 配信が始まったよ！」',
       this.stringEscape(video.title || '-タイトル不明-', 80),
-      this.timeString(video.actualStartTime),
-      url,
+      '⏰: ' + this.timeString(video.actualStartTime),
+      video.url('-URL不明-'),
     ]
-    await this.tweet(lines.join('\n'), isSilent)
+    return await this.tweet(lines.join('\n'))
   }
 
-  public static async endLiveStreaming(video: VideoInterface, isSilent: boolean = false) {
-    const url = video.videoId
-      ? 'https://youtu.be/' + video.videoId
-      : '-URL不明-'
-
+  public async endLiveStreamingReply(video: Video) {
     const lines = [
       dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
       '🌾「配信が終わったよ！」',
-      this.stringEscape(video.title || '-タイトル不明-', 80),
-      this.timeString(video.actualStartTime, video.actualEndTime, true),
-      url,
+      '⏰: ' + this.timeString(video.actualStartTime, video.actualEndTime, true),
     ]
-    await this.tweet(lines.join('\n'), isSilent)
+    return await this.tweet(lines.join('\n'), video.startTweetId)
   }
 
   ///
 
-  protected static async tweet (text: string, isSilent: boolean = false) {
-    const tweet = await TwitterAPI.postTweet(text, isSilent)
-    const stub = TwitterAPI.isStubMode() ? ' (stub)' : ''
-    Log.info(`> tweet${stub}\n${tweet.text} [EOL]`)
-  }
 
-  protected static stringEscape (text: string, limit: number = 100): string {
+  protected stringEscape (text: string, limit: number = 100): string {
     // twitterで反応する記号を無効に
     const escapeText = text
       .replace(/#/g, '＃')
@@ -93,14 +111,12 @@ export default class Tweeter {
     return limitText
   }
 
-  protected static timeString(startStr?: string, endStr?: string, showEnd: boolean = false) {
-    const startDate = new Date(startStr)
-    const start = startStr ? dateformat(startDate, 'HH:MM') : '--:--'
+  protected timeString(startDate?: Date, endDate?: Date, showEnd: boolean = false) {
+    const start = startDate ? dateformat(startDate, 'HH:MM') : '--:--'
 
-    let text = '⏰: ' + start + ' ~'
+    let text = start + ' ~'
     if (showEnd) {
-      const endDate = new Date(endStr)
-      const end = endStr ? dateformat(endDate, 'HH:MM') : '--:--'
+      const end = endDate ? dateformat(endDate, 'HH:MM') : '--:--'
 
       const minutes = diffDates(endDate, startDate, 'minutes')
       text += ' ' + end + ' (' + minutes +' 分)'

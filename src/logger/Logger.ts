@@ -88,9 +88,11 @@ log4js.configure({
     err: { type: 'logLevelFilter', appender: 'errFile', level: 'warn' },
   },
   categories: {
-    default: { appenders: ['out', 'log', 'err'], level: LOG_LEVEL, enableCallStack: true },
+    default: { appenders: ['out'], level: LOG_LEVEL, enableCallStack: true },
+
     notify: { appenders: ['out', 'log', 'err'], level: LOG_LEVEL, enableCallStack: true },
     cron: { appenders: ['out', 'log', 'err'], level: LOG_LEVEL, enableCallStack: true },
+    event: { appenders: ['out', 'log', 'err'], level: LOG_LEVEL, enableCallStack: true },
     record: { appenders: ['recordFile'], level: 'ALL', enableCallStack: true },
   }
 })
@@ -100,5 +102,6 @@ export const Log = log4js.getLogger()
 
 export const NotifyLog =log4js.getLogger('notify') // 通知からの処理
 export const CronLog = log4js.getLogger('cron') // cron からの処理
+export const EventLog = log4js.getLogger('event') // イベント系
 
 export const RecordLog = log4js.getLogger('record') // dump 用

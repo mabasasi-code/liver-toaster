@@ -1,5 +1,5 @@
 import config from "../../config/config";
-import PushInterface from "../interface/pushbullet/PushInterface";
+import PushInterface from "../../interface/pushbullet/PushInterface";
 import { Log } from "../../logger/Logger";
 import Tweeter from "../util/Tweeter";
 import BasePushHandler from "./BasePushHandler";
@@ -24,6 +24,6 @@ export default class TestHandler extends BasePushHandler {
 
   public async handle(push: PushInterface): Promise<void> {
     Log.debug('> test notify')
-    await Tweeter.testNotify()
+    await Tweeter.builder().testNotify()
   }
 }

@@ -3,9 +3,10 @@
     "target": "esnext",
     "module": "commonjs",
     "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "esModuleInterop": true, // inport * の抑制
   },
-  "exclude": [
-    "node_modules",
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"],
 }

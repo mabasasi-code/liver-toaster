@@ -1,8 +1,8 @@
 import config from '../../../config/config'
 import { Log } from '../../../logger/Logger'
-import PushInterface from "../../interface/pushbullet/PushInterface"
+import PushInterface from '../../../interface/pushbullet/PushInterface'
 import Tweeter from '../../util/Tweeter'
-import BashYoutubeHandler from "./BaseYoutubeHandler"
+import BashYoutubeHandler from './BaseYoutubeHandler'
 
 export default class MemberHandler extends BashYoutubeHandler {
   public readonly TITLE_SUFFIX = ' さんからのメンバー限定の投稿'
@@ -21,6 +21,6 @@ export default class MemberHandler extends BashYoutubeHandler {
 
   public async handle(push: PushInterface): Promise<void> {
     Log.debug('> member notify')
-    await Tweeter.postMemberCommunity(config.youtube.channelId)
+    await Tweeter.builder().postMemberCommunity(config.youtube.channelId)
   }
 }

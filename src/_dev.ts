@@ -1,17 +1,52 @@
-import bootstrap, { PushbulletInstance, SchedulerInstance, TwitterAPI, VideoStore } from './bootstrap'
+import bootstrap, { PushbulletInstance, SchedulerInstance, TwitterAPI, YoutubeAPI } from './bootstrap'
 import { promises as fs } from 'fs'
 import Tweeter from './lib/util/Tweeter'
-import Video from './lib/store/Video'
-import VideoProcess from './lib/process/VideoProcess'
-import FeedProcess from './lib/process/FeedProcess'
 import config from './config/config'
 import { Log } from './logger/Logger'
+import Video from './model/Video'
+import { createConnection } from 'typeorm'
+import Youtube from './lib/api/Youtube'
+import UpdateVideoTask from './task/UpdateVideoTask'
 
 const main = async () => {
   await bootstrap()
 
-  const scueduler = SchedulerInstance
-  await scueduler.run()
+  const videoId = 'sdMK9ACKI2I'
+
+  const task = new UpdateVideoTask(YoutubeAPI, Log)
+  await task.updateById('NQ8CWY99_pk')
+
+
+  // await Video.delete({})
+
+
+  // const YoutubeAPI = new Youtube(config.youtube.apiKey)
+  // const task = new UpdateVideoTask(YoutubeAPI, Log)
+
+  // await task.updateById(videoId)
+  ///
+
+  // const api = await YoutubeAPI.fetchVideo(videoId)
+  // // console.log(api)
+
+  // const video = await Video.findOne({ videoId: videoId }) || new Video()
+  // video.assignAPI(api)
+  // console.log(video)
+
+  // // video.actualStartTime = null
+  // // video.actualEndTime = null
+  // video.endTweetId = null
+
+  // await video.save()
+  // console.log(video)
+
+
+
+
+  // await bootstrap()
+
+  // const scueduler = SchedulerInstance
+  // await scueduler.run()
 
   // await VideoStore.reload()
 
