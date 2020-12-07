@@ -5,14 +5,17 @@ import { CronLog } from '../logger/Logger'
 import config from '../config/config'
 import UpdateVideoTask from '../task/UpdateVideoTask'
 import FetchFeedTask from '../task/FetchFeedTask'
+import UpdateChannelTask from '../task/UpdateChannelTask'
 
 export default class Scheduler {
+  protected updateChannelTask: UpdateChannelTask
   protected updateVideoTask: UpdateVideoTask
   protected fetchFeedTask: FetchFeedTask
 
   protected jobs: schedule.Job[]
 
   constructor () {
+    this.updateChannelTask = new UpdateChannelTask(YoutubeAPI, CronLog)
     this.updateVideoTask = new UpdateVideoTask(YoutubeAPI, CronLog)
     this.fetchFeedTask = new FetchFeedTask()
 
@@ -32,6 +35,11 @@ export default class Scheduler {
       try {
         // 10 分おきに処理をする
         CronLog.info('[run] start : ' + dateformat(date, 'yyyy-mm-dd HH:MM:ss'))
+
+        // channek を更新する
+        await this.checkChannel()
+
+        // video を更新する
         await this.checkVideos()
 
         // feed を拾ってくる
@@ -54,17 +62,13 @@ export default class Scheduler {
     this.jobs = []
   }
 
-  ///
+  /// ////////////////////////////////////////////////////////////
 
-  public async checkFeed() {
-    CronLog.debug('Check feed by registered channel')
+  public async checkChannel() {
+    CronLog.debug('Check channel in DB')
 
     try {
-      const channelId = config.youtube.channelId
-      if (channelId) {
-        const notIns = await this.fetchFeedTask.getNotInDB(channelId)
-        await this.updateVideoTask.updateByIds(notIns)
-      }
+      await this.updateChannelTask.updateMonitoringChannels()
     } catch (err) {
       CronLog.error(err)
     }
@@ -75,6 +79,20 @@ export default class Scheduler {
 
     try {
       await this.updateVideoTask.updateMonitoringVideos()
+    } catch (err) {
+      CronLog.error(err)
+    }
+  }
+
+  public async checkFeed() {
+    CronLog.debug('Check feed by registered channel')
+
+    try {
+      const channelId = config.youtube.channelId
+      if (channelId) {
+        const notIns = await this.fetchFeedTask.getNotInDB(channelId)
+        await this.updateVideoTask.updateByIds(notIns)
+      }
     } catch (err) {
       CronLog.error(err)
     }
