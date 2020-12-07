@@ -21,4 +21,16 @@ export default class BaseModel extends BaseEntity {
     if (value) return new Date(value)
     return null
   }
+
+  protected getToNumber(obj: { [key: string]: any }, prop: string) {
+    const value: string = get(obj, prop)
+    if (value) return Number(value)
+    return null
+  }
+
+  protected getToBoolean(obj: { [key: string]: any }, prop: string) {
+    const value: string = get(obj, prop)
+    if (value) return value === 'true'
+    return null
+  }
 }

@@ -14,12 +14,10 @@ export default class UpdateVideoTask {
     this.logger = logger
   }
 
-  // 通知からメイン
   public async updateById(videoId: string) {
     return await this.updateByIds([videoId])
   }
 
-  // feedからメイン
   public async updateByIds(videoIds: string[]) {
     const dbVideos = await mapSeries(videoIds, async (id) => {
       const video = await Video.findOne({ videoId: id })
@@ -28,7 +26,11 @@ export default class UpdateVideoTask {
     await this.update(videoIds, dbVideos)
   }
 
-  // スケジューラーからメイン
+  public async updateByVideos(videos: Video[]) {
+    const videoIds = videos.map(e => e.videoId)
+    await this.update(videoIds, videos)
+  }
+
   public async updateMonitoringVideos() {
     // db から処理対象っぽい動画を全部取り出す
     const dbVideos = await Video.find({ endTweetId: IsNull(), deletedAt: IsNull() })
@@ -36,11 +38,6 @@ export default class UpdateVideoTask {
   }
 
   /// ////////////////////////////////////////////////////////////
-
-  public async updateByVideos(videos: Video[]) {
-    const videoIds = videos.map(e => e.videoId)
-    await this.update(videoIds, videos)
-  }
 
   protected async update(videoIds: string[], videos?: Video[]) {
     this.logger.debug(`> Update videos: (${videoIds.length}) ` + JSON.stringify(videoIds))
@@ -64,7 +61,7 @@ export default class UpdateVideoTask {
     for (const videoId of videoIds) {
       const db = dbVideos[videoId] || null // null なら db に存在しない新規動画
       const api = apiVideos[videoId] || null // null なら 削除された動画
-      this.logger.trace(`[${idx++}/${length}] videoId: ${videoId} (db:${Boolean(db)}, api: ${Boolean(api)})`)
+      this.logger.trace(`[${idx++}/${length}] vid: ${videoId} (db:${Boolean(db)}, api: ${Boolean(api)})`)
 
       if (api) {
         // API の値があるなら upsert (restore もする)

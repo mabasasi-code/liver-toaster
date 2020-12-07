@@ -1,8 +1,4 @@
-export interface ThumbnailInterface {
-  url: string
-  width: number
-  height: number
-}
+import { YoutubeThumbnailInterface } from './YoutubeThumbnailInterface';
 
 export default interface YoutubeVideoInterface {
   id: string
@@ -12,11 +8,11 @@ export default interface YoutubeVideoInterface {
     title: string
     description: string
     thumbnails: {
-      default: ThumbnailInterface
-      medium: ThumbnailInterface
-      high: ThumbnailInterface
-      standard?: ThumbnailInterface
-      maxers?: ThumbnailInterface
+      default: YoutubeThumbnailInterface
+      medium: YoutubeThumbnailInterface
+      high: YoutubeThumbnailInterface
+      standard?: YoutubeThumbnailInterface
+      maxers?: YoutubeThumbnailInterface
     }
     channelTitle: string
     categoryId: number

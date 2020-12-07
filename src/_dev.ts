@@ -7,14 +7,23 @@ import Video from './model/Video'
 import { createConnection } from 'typeorm'
 import Youtube from './lib/api/Youtube'
 import UpdateVideoTask from './task/UpdateVideoTask'
+import UpdateChannelTask from './task/UpdateChannelTask'
+import Channel from './model/Channel'
 
 const main = async () => {
   await bootstrap()
 
-  const videoId = 'sdMK9ACKI2I'
+  const channelId = 'UCmUjjW5zF1MMOhYUwwwQv9Q'
+  const task = new UpdateChannelTask(YoutubeAPI, Log)
+  await task.updateById(channelId)
 
-  const task = new UpdateVideoTask(YoutubeAPI, Log)
-  await task.updateById('NQ8CWY99_pk')
+  console.log(await Channel.find())
+
+
+  // const videoId = 'sdMK9ACKI2I'
+
+  // const task = new UpdateVideoTask(YoutubeAPI, Log)
+  // await task.updateById('NQ8CWY99_pk')
 
 
   // await Video.delete({})
