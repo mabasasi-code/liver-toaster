@@ -37,8 +37,8 @@ export default class Channel extends SoftDeleteModel {
     @Column('integer', { default: 0 })
     videoCount: number
 
-    @Column('boolean', { default: false })
-    hiddenSubscriberCount: boolean
+    @Column('boolean', { nullable: true, default: false })
+    hiddenSubscriberCount?: boolean
 
     ///
     // parameter
