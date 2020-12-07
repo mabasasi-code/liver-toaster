@@ -26,7 +26,6 @@ export default async () => {
     config.twitter.consumerSecret,
     config.twitter.accessToken,
     config.twitter.accessTokenSecret,
-    config.mode.ignoreTweet,
   )
 
   PushbulletInstance = new Pushbullet(

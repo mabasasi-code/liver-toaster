@@ -4,7 +4,7 @@ export interface ThumbnailInterface {
   height: number
 }
 
-export default interface VideoInterface {
+export default interface YoutubeVideoInterface {
   id: string
   snippet: {
     publishedAt: string // 2020-11-19T09:19:07Z
