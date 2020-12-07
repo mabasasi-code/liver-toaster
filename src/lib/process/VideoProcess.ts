@@ -1,10 +1,10 @@
 import { VideoStore, YoutubeAPI } from "../../bootstrap";
-import VideoInterface from "../interface/database/VideoInterface";
+import VideoInterface from "../../interface/database/VideoInterface";
 import Tweeter from "../util/Tweeter";
 import ArrayToObject from "../util/ArrayToObject";
 import { Logger } from "log4js";
 import { mapSeries } from "p-iteration";
-import DeleteVideoInterface from "../interface/database/DeleteVideoInterface";
+import DeleteVideoInterface from "../../interface/database/DeleteVideoInterface";
 
 export default class VideoProcess {
   protected logger: Logger

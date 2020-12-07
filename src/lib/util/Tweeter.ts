@@ -4,7 +4,7 @@ import { TwitterAPI } from '../../bootstrap';
 import config from '../../config/config';
 import { EventLog } from '../../logger/Logger';
 import Video from '../../model/Video';
-import TweetInterface from '../interface/twitter/TweetInterface';
+import TweetInterface from '../../interface/twitter/TweetInterface';
 
 export default class Tweeter {
   protected isMute: boolean = false
