@@ -40,27 +40,14 @@ export default class Tweeter {
     return tweet
   }
 
-  ///
+  /// ////////////////////////////////////////////////////////////
 
   public async testNotify() {
     const lines = [
       dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
       this.stringEscape('通知のテストです')
     ]
-    await this.tweet(lines.join('\n'))
-  }
-
-  public async postMemberCommunity(channelId?: string) {
-    const url = channelId
-      ? 'https://www.youtube.com/channel/' + channelId + '/community'
-      : '-URL不明-'
-
-    const lines = [
-      dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
-      '🌾「メンバー限定の投稿があったよ！」',
-      url,
-    ]
-    await this.tweet(lines.join('\n'))
+    return await this.tweet(lines.join('\n'))
   }
 
   ///
@@ -98,6 +85,37 @@ export default class Tweeter {
 
   ///
 
+  public async postMemberCommunity(channelId: string, icon?: string) {
+    const url = channelId
+      ? 'https://www.youtube.com/channel/' + channelId + '/community'
+      : '-URL不明-'
+
+    const pref = icon ? icon + ' ' : ''
+    const lines = [
+      dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
+      `🌾「${pref}メンバー限定の投稿があったよ！」`,
+      url,
+    ]
+    return await this.tweet(lines.join('\n'))
+  }
+
+  public async postMemberCommunityVideo(channelId: string) {
+    return this.postMemberCommunity(channelId, '🔴')
+  }
+
+  public async postMemberCommunityPicture(channelId: string) {
+    return this.postMemberCommunity(channelId, '🎨')
+  }
+
+  public async endMemberLiveStreamingReply(video: Video) {
+    const lines = [
+      dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
+      '⏰: ' + this.timeString(video.actualStartTime, video.actualEndTime, true),
+    ]
+    return await this.tweet(lines.join('\n'), video.startTweetId)
+  }
+
+  /// ////////////////////////////////////////////////////////////
 
   protected stringEscape (text: string, limit: number = 100): string {
     // twitterで反応する記号を無効に

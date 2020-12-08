@@ -16,14 +16,12 @@ export default class VideoSubscriber implements EntitySubscriberInterface<Video>
   }
 
   async beforeInsert (event: InsertEvent<Video>) {
-    // EventLog.trace(`> [${event.entity.videoId}] insert`)
-    await VideoSubscriber.videoProcess(event.entity)
+    await VideoSubscriber.process(event.entity)
   }
 
   async beforeUpdate (event: UpdateEvent<Video>) {
-    // EventLog.trace(`> [${event.entity.videoId}] update`)
     if (this.simpleUpdateColumns(event).length > 0) {
-      await VideoSubscriber.videoProcess(event.entity, event.databaseEntity)
+      await VideoSubscriber.process(event.entity, event.databaseEntity)
     }
   }
 
@@ -34,7 +32,7 @@ export default class VideoSubscriber implements EntitySubscriberInterface<Video>
       .filter(e => !(e.isObjectId || e.isCreateDate || e.isUpdateDate || e.isDeleteDate))
   }
 
-  public static async videoProcess(video: Video, dbVideo?: Video) {
+  public static async process(video: Video, dbVideo?: Video) {
     // 参照渡しなので、値も更新される
     // この event の error は失敗してもスルーする
     try {
@@ -47,12 +45,20 @@ export default class VideoSubscriber implements EntitySubscriberInterface<Video>
   ///
 
   public static async videoNotify(video: Video) {
+    // メン限はツイ時に予定と開始を埋める
+
     // 配信が始まってなくて、予定ツイをしてなさそうならする
     if (!video.actualStartTime && !video.actualEndTime) {
       EventLog.debug(`> [${video.videoId}] schedule stream (tweet: ${Boolean(video.scheduleTweetId)})`)
       if (!video.scheduleTweetId) {
-        const tweet = await Tweeter.builder().scheduleStreaming(video)
-        video.scheduleTweetId = tweet.id_str
+        if (video.isMemberOnly) {
+          const tweet = await Tweeter.builder().postMemberCommunityVideo(video.channelId)
+          video.scheduleTweetId = tweet.id_str
+          video.startTweetId = tweet.id_str
+        } else {
+          const tweet = await Tweeter.builder().scheduleStreaming(video)
+          video.scheduleTweetId = tweet.id_str
+        }
       }
       return
     }
@@ -61,8 +67,13 @@ export default class VideoSubscriber implements EntitySubscriberInterface<Video>
     if (video.actualStartTime && !video.actualEndTime) {
       EventLog.debug(`> [${video.videoId}] live streaming (tweet: ${Boolean(video.startTweetId)})`)
       if (!video.startTweetId) {
-        const tweet = await Tweeter.builder().startLiveStreaming(video)
-        video.startTweetId = tweet.id_str
+        if (video.isMemberOnly) {
+          const tweet = await Tweeter.builder().postMemberCommunityVideo(video.channelId)
+          video.startTweetId = tweet.id_str
+        } else {
+          const tweet = await Tweeter.builder().startLiveStreaming(video)
+          video.startTweetId = tweet.id_str
+        }
       }
       return
     }
@@ -77,8 +88,13 @@ export default class VideoSubscriber implements EntitySubscriberInterface<Video>
       }
 
       if (!video.endTweetId) {
-        const tweet = await Tweeter.builder().endLiveStreamingReply(video)
-        video.endTweetId = tweet.id_str
+        if (video.isMemberOnly) {
+          const tweet = await Tweeter.builder().endMemberLiveStreamingReply(video)
+          video.endTweetId = tweet.id_str
+        } else {
+          const tweet = await Tweeter.builder().endLiveStreamingReply(video)
+          video.endTweetId = tweet.id_str
+        }
       }
       return
     }

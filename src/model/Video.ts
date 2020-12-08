@@ -43,6 +43,9 @@ export default class Video extends SoftDeleteModel {
     @Column('datetime', { nullable: true })
     actualEndTime?: Date
 
+    @Column('boolean', { default: false })
+    isMemberOnly: boolean
+
     ///
     // parameter
 
@@ -94,6 +97,9 @@ export default class Video extends SoftDeleteModel {
           'snippet.thumbnails.medium.url',
           'snippet.thumbnails.default.url',
         )
+
+        // 再生数が取れないならメン限
+        this.isMemberOnly = !Boolean(this.get(api, 'statistics.viewCount'))
       }
     }
 }

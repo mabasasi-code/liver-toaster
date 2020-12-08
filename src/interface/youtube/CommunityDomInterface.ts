@@ -32,4 +32,13 @@ export default interface CommunityDomInterface {
       }
     }
   }
+  sponsorsOnlyBadge?: { // これが有ると member only
+    sponsorsOnlyBadgeRenderer: {
+      tooltip: {
+        runs: {
+          text: string // 1 にメンバー名が入ってる
+        }[]
+      }
+    }
+  }
 }

@@ -9,15 +9,31 @@ import Youtube from './lib/api/Youtube'
 import UpdateVideoTask from './task/UpdateVideoTask'
 import UpdateChannelTask from './task/UpdateChannelTask'
 import Channel from './model/Channel'
+import ScrapeChannelCommunity from './task/ScrapeChannelCommunityTask'
+import ScrapeChannelCommunityTask from './task/ScrapeChannelCommunityTask'
+
+import { Cookie, CookieMap } from 'cookiefile'
+import MessageHandler from './lib/MessageHandler'
 
 const main = async () => {
   await bootstrap()
 
-  const channelId = 'UCmUjjW5zF1MMOhYUwwwQv9Q'
-  const task = new UpdateChannelTask(YoutubeAPI, Log)
-  await task.updateById(channelId)
+  const channelId = 'UC1519-d1jzGiL1MPTxEdtSA'
 
-  console.log(await Channel.find())
+  const json = await fs.readFile('./storage/records/json/mirrorMemberStream.json', 'utf-8')
+  const push = JSON.parse(json)
+
+  const handler = new MessageHandler(true)
+  await handler.invoke(push)
+
+
+  // const res = await YoutubeAPI.fetchVideo('jY26msbzvYI')
+  // console.log(res)
+
+  // const task = new UpdateVideoTask(YoutubeAPI, Log)
+  // await task.updateById('jY26msbzvYI')
+
+  // console.log(await Channel.find())
 
 
   // const videoId = 'sdMK9ACKI2I'
