@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=product ts-node -r dotenv/config ./src/index.ts",
-    "dev": "cross-env NODE_ENV=develop ts-node -r dotenv/config ./src/index.ts dotenv_config_path=./.env.dev",
-    "test": "cross-env NODE_ENV=develop ts-node --transpile-only -r dotenv/config ./src/_dev.ts dotenv_config_path=./.env.dev",
+    "dev": "cross-env NODE_ENV=develop dotenv_config_path=./.env.dev ts-node --transpile-only -r dotenv/config ./src/index.ts",
+    "test": "cross-env NODE_ENV=develop dotenv_config_path=./.env.dev ts-node --transpile-only -r dotenv/config ./src/_dev.ts",
     "auth": "ts-node -r dotenv/config ./src/_authorize.ts",
     "auth:dev": "ts-node -r dotenv/config ./src/_authorize.ts dotenv_config_path=./.env.dev"
   },
