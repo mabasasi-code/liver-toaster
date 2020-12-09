@@ -11,7 +11,7 @@ export default interface CommunityDomInterface {
   contentText: {
     runs: {
       text: string
-    }[] // 改行ごとに 別れている？
+    }[] // link ごとに区切られる (link は独立して抽出してる)
   }
   backstageAttachment?: { // これが無ければテキストのみ
     backstageImageRenderer?: { // 画像 post

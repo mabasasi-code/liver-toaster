@@ -3,19 +3,19 @@ import { NotifyLog } from '../../../logger/Logger'
 import PushInterface from '../../../interface/pushbullet/PushInterface'
 import Tweeter from '../../util/Tweeter'
 import BashYoutubeHandler from './BaseYoutubeHandler'
-import ScrapeChannelCommunityTask from '../../../task/ScrapeChannelCommunityTask'
 import UpdateVideoTask from '../../../task/UpdateVideoTask'
 import { YoutubeAPI } from '../../../bootstrap'
+import YoutubeChannelCommunity from '../../scraper/YoutubeChannelCommunity'
 
 export default class MemberHandler extends BashYoutubeHandler {
   public readonly TITLE_SUFFIX = ' さんからのメンバー限定の投稿'
 
-  protected scrapeChannelCommunityTask: ScrapeChannelCommunityTask
+  protected youtubeChannelCommunity: YoutubeChannelCommunity
   protected updateVideoTask: UpdateVideoTask
 
   constructor () {
     super()
-    this.scrapeChannelCommunityTask = new ScrapeChannelCommunityTask()
+    this.youtubeChannelCommunity = new YoutubeChannelCommunity()
     this.updateVideoTask = new UpdateVideoTask(YoutubeAPI, NotifyLog)
   }
 
@@ -37,7 +37,7 @@ export default class MemberHandler extends BashYoutubeHandler {
     const body = push.body || ''
 
     // communiry を覗き見してくる
-    const posts = await this.scrapeChannelCommunityTask.get(channelId, true)
+    const posts = await this.youtubeChannelCommunity.getPosts(channelId, true)
     for (const post of posts) {
       // body が一致するやつを探す
       const postHeadText = ((post.contentText.runs[0] || {}).text).trim()
