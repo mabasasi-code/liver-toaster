@@ -1,6 +1,6 @@
-import prompt from '../prompt'
+import Twitter, { AccessTokenResponse, TokenResponse } from 'twitter-lite'
 import chalk from 'chalk'
-import Twitter from 'twitter-lite'
+import Terminal from './lib/util/Terminal'
 
 const TWITTER_CONSUMER_KEY = process.env.TWITTER_CONSUMER_KEY
 const TWITTER_CONSUMER_SECRET = process.env.TWITTER_CONSUMER_SECRET
@@ -12,20 +12,18 @@ const client = new Twitter({
   consumer_secret: TWITTER_CONSUMER_SECRET
 })
 
-const getRequestToken = async function (callback_url) {
-  // return: { oauth_token, oauth_token_secret, oauth_callback_confirmed, url }
+const getRequestToken = async function (callback_url: string): Promise<TokenResponse> {
   return new Promise(function (resolve, reject) {
     client
     .getRequestToken(TWITTER_CALLBACK_URL)
-    .then(res => {
-      res.url = 'https://api.twitter.com/oauth/authenticate?oauth_token=' + res.oauth_token
+    .then((res: TokenResponse) => {
       resolve(res)
     })
     .catch(err => reject(err))
   })
 }
 
-const getAccessToken = async function (oauth_token, oauth_verifier) {
+const getAccessToken = async function (oauth_token: string, oauth_verifier: string): Promise<AccessTokenResponse> {
   // return: { oauth_token, oauth_token_secret, user_id, screen_name }
   return new Promise(function (resolve, reject) {
     client
@@ -38,24 +36,25 @@ const getAccessToken = async function (oauth_token, oauth_verifier) {
   })
 }
 
-const dumpError = function (val) {
-  return chalk.red(JSON.stringify(val))
-}
-
 ///
 
-const authorize = async function (options = {}) {
-  if (!TWITTER_CONSUMER_KEY || !TWITTER_CONSUMER_SECRET | !TWITTER_CALLBACK_URL) {
-    throw Error('Write parameter in .env');
+const authorize = async function () {
+  if (!TWITTER_CONSUMER_KEY || !TWITTER_CONSUMER_SECRET || !TWITTER_CALLBACK_URL) {
+    throw new Error('Write parameter in .env');
   }
 
   // get request token
   const request = await getRequestToken(TWITTER_CALLBACK_URL)
-  console.log(request.url)
+  if (request.oauth_callback_confirmed === 'false') {
+    throw new Error('OAuth failure')
+  }
+
+  const oauthUrl = 'https://api.twitter.com/oauth/authenticate?oauth_token=' + request.oauth_token
+  console.log(oauthUrl)
 
   while (true) {
     const mes = chalk.green('上記のurlで認証した後、遷移先のurlを貼り付けてください。(stop: ctrl + c)')
-    const callbackUrl = await prompt(mes)
+    const callbackUrl = await Terminal.prompt(mes)
 
     try {
       // parse
@@ -76,14 +75,16 @@ const authorize = async function (options = {}) {
 
       return
     } catch (err) {
-      console.error(dumpError(err))
+      const json = JSON.stringify(err)
+      console.error(chalk.red(json))
     }
   }
 }
 
 authorize()
   .catch(err => {
-    console.error(dumpError(err))
+    const json = JSON.stringify(err)
+    console.error(chalk.red(json))
   })
   .finally(() => {
     process.exit(0)

@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "sourceMap": true,
+    "esModuleInterop": true, // inport * の抑制
+  },
+  "exclude": [
+    "node_modules",
+  ]
+}

@@ -4,8 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "babel-node  -r ./node_modules/dotenv/config ./src/index.js",
-    "auth": "babel-node  -r ./node_modules/dotenv/config ./src/twitters/_authorize.js"
+    "start": "cross-env NODE_ENV=product ts-node -r dotenv/config ./src/index.ts",
+    "dev": "cross-env NODE_ENV=develop ts-node -r dotenv/config ./src/index.ts dotenv_config_path=./.env.dev",
+    "test": "cross-env NODE_ENV=develop ts-node -r dotenv/config ./src/_dev.ts dotenv_config_path=./.env.dev",
+    "auth": "ts-node -r dotenv/config ./src/_authorize.ts",
+    "auth:dev": "ts-node -r dotenv/config ./src/_authorize.ts dotenv_config_path=./.env.dev"
   },
   "keywords": [],
   "author": "",
@@ -14,13 +17,28 @@
     "@babel/node": "^7.12.6",
     "@babel/preset-env": "^7.12.1",
     "chalk": "^4.1.0",
+    "cross-env": "^7.0.2",
+    "dateformat": "^4.0.0",
+    "diff-dates": "^1.0.13",
+    "dot-prop": "^6.0.1",
     "dotenv": "^8.2.0",
+    "googleapis": "^65.0.0",
+    "log4js": "^6.3.0",
+    "nedb-promises": "^4.1.0",
+    "node-schedule": "^1.3.2",
+    "p-iteration": "^1.1.8",
     "pushbullet": "^2.4.0",
     "readline": "^1.3.0",
+    "rss-parser": "^3.9.0",
     "twitter-lite": "^0.14.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.1",
-    "@babel/core": "^7.12.3"
+    "@babel/core": "^7.12.3",
+    "@types/dateformat": "^3.0.1",
+    "@types/node": "^14.14.9",
+    "@types/node-schedule": "^1.3.1",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.1.2"
   }
 }
