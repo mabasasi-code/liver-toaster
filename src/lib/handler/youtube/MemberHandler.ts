@@ -1,22 +1,19 @@
 import config from '../../../config/config'
 import { NotifyLog } from '../../../logger/Logger'
 import PushInterface from '../../../interface/pushbullet/PushInterface'
-import Tweeter from '../../util/Tweeter'
 import BashYoutubeHandler from './BaseYoutubeHandler'
-import UpdateVideoTask from '../../../task/UpdateVideoTask'
 import { YoutubeAPI } from '../../../bootstrap'
-import YoutubeChannelCommunity from '../../scraper/YoutubeChannelCommunity'
+import Channel from '../../../model/Channel'
+import CheckChannelCommunityTask from '../../../task/ScrapeChannelCommunityTask'
 
 export default class MemberHandler extends BashYoutubeHandler {
   public readonly TITLE_SUFFIX = ' さんからのメンバー限定の投稿'
 
-  protected youtubeChannelCommunity: YoutubeChannelCommunity
-  protected updateVideoTask: UpdateVideoTask
+  protected checkChannelCommunityTask: CheckChannelCommunityTask
 
   constructor () {
     super()
-    this.youtubeChannelCommunity = new YoutubeChannelCommunity()
-    this.updateVideoTask = new UpdateVideoTask(YoutubeAPI, NotifyLog)
+    this.checkChannelCommunityTask = new CheckChannelCommunityTask(YoutubeAPI, NotifyLog)
   }
 
   public isValid(push: PushInterface): boolean {
@@ -33,38 +30,16 @@ export default class MemberHandler extends BashYoutubeHandler {
 
   public async handle(push: PushInterface): Promise<void> {
     NotifyLog.debug('> member notify')
-    const channelId = config.youtube.channelId
-    const body = push.body || ''
+
+    // channel の抽出
+    const channelTitle = push.title.replace(this.TITLE_SUFFIX, '')
+    const channel = await Channel.findOne({ title: channelTitle })
+    if (!channel) {
+      new Error(`Channel not found (title: ${channelTitle})`)
+    }
+    NotifyLog.trace(`> channel: ${channel.channelId}, ${channel.title}`)
 
     // communiry を覗き見してくる
-    const posts = await this.youtubeChannelCommunity.getPosts(channelId, true)
-    for (const post of posts) {
-      // body が一致するやつを探す
-      const postHeadText = ((post.contentText.runs[0] || {}).text).trim()
-      if (body.startsWith(postHeadText) || postHeadText.startsWith(body)) {
-        // 付属データがあるか
-        const backStage = post.backstageAttachment
-        if (backStage) {
-          if (backStage.videoRenderer) {
-            // 動画なら video task に渡す
-            NotifyLog.debug('> member stream notify')
-            const vid = backStage.videoRenderer.videoId
-            this.updateVideoTask.updateById(vid)
-            return
-          } else if (backStage.backstageImageRenderer) {
-            // 画像なら 画像ツイする
-            NotifyLog.debug('> member picture notify')
-            await Tweeter.builder().postMemberCommunityPicture(channelId)
-            return
-          }
-        }
-
-        // 何も一致しなかった場合、探索を打ち切る -> 通常処理
-        break
-      }
-    }
-
-    // どれも該当しない場合は通常ツイ
-    await Tweeter.builder().postMemberCommunity(channelId)
+    await this.checkChannelCommunityTask.checkMatchText(push.body, channel, true)
   }
 }

@@ -10,7 +10,7 @@ import UpdateVideoTask from './task/UpdateVideoTask'
 import UpdateChannelTask from './task/UpdateChannelTask'
 import Channel from './model/Channel'
 import ScrapeChannelCommunity from './task/ScrapeChannelCommunityTask'
-import ScrapeChannelCommunityTask from './task/ScrapeChannelCommunityTask'
+import CheckChannelCommunityTask from './task/ScrapeChannelCommunityTask'
 
 import { Cookie, CookieMap } from 'cookiefile'
 import MessageHandler from './lib/MessageHandler'
@@ -18,7 +18,11 @@ import MessageHandler from './lib/MessageHandler'
 const main = async () => {
   await bootstrap()
 
-  const channelId = 'UC1519-d1jzGiL1MPTxEdtSA'
+  // const channelId = 'UC1519-d1jzGiL1MPTxEdtSA'
+  // const channel = await Channel.findOne({ channelId })
+
+  // const scrape = new CheckChannelCommunityTask(YoutubeAPI, Log)
+  // await scrape.checkFirst(channel, true)
 
   const json = await fs.readFile('./storage/records/json/mirrorMemberStream.json', 'utf-8')
   const push = JSON.parse(json)

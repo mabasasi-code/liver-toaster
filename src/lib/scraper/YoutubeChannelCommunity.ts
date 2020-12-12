@@ -4,10 +4,22 @@ import { HTMLElement, parse as HTMLParser } from 'node-html-parser'
 import { CookieMap } from 'cookiefile'
 import CommunityDomInterface from '../../interface/youtube/CommunityDomInterface'
 
-export default class YoutubeChannelCommunity {
+export default class YoutubeCommunityScraper {
   public async getPostFirst(channelId: string, loadCookie: boolean = false) {
     const posts = await this.getPosts(channelId, loadCookie)
     return get<CommunityDomInterface>(posts, '0')
+  }
+
+  public async findPost(text: string, channelId: string, loadCookie: boolean = false) {
+    const posts = await this.getPosts(channelId, loadCookie)
+    for (const post of posts) {
+      // post の text と一致するか
+      const postHeadText = ((post.contentText.runs[0] || {}).text).trim()
+      if (text.startsWith(postHeadText) || postHeadText.startsWith(text)) {
+        return post
+      }
+    }
+    return null
   }
 
   public async getPosts(channelId: string, loadCookie: boolean = false) {
