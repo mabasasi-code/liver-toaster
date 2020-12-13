@@ -2,6 +2,7 @@ import { cac } from 'cac'
 import bootstrap, { PushbulletInstance, YoutubeAPI } from './bootstrap'
 import { CliLog } from './logger/Logger'
 import Channel from './model/Channel'
+import TaskWrapper from './task/TaskWrapper'
 import UpdateChannelTask from './task/UpdateChannelTask'
 
 const cli = cac()
@@ -40,14 +41,21 @@ cli
 
   const channels = await Channel.find()
   channels.forEach((c) => {
-    const del = Boolean(c.deletedAt) ? '(delete) ' : ''
-    const text = `[${c.id}] ${del}${c.channelId} ${c.title}`
+    const del = Boolean(c.deletedAt) ? ' (deleted)' : ''
+    const text = `[${c.id}] ${c.channelId} ${c.title}${del}`
     console.log(text)
   })
 })
 
 cli
-  .command('', 'Run')
+  .command('init', 'Initialize database')
+  .action(async (options) => {
+    const task = new TaskWrapper(CliLog)
+    await task.checkAll(true)
+  })
+
+cli
+  .command('[no args]', 'Run')
   .action(async (options) => {
     if (cli.args.length > 0) {
       throw new Error('Command not found')
@@ -68,9 +76,6 @@ const main = async () => {
 }
 
 main()
-  .then(res => {
-    CliLog.info('> Success')
-  })
   .catch(err => {
     CliLog.error(err)
     process.exit(1)
