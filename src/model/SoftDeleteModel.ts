@@ -10,13 +10,15 @@ export default class SoftDeleteModel extends BaseModel {
   }
 
   public setDeleteFlag() {
-    if (this.deletedAt) {
+    // deletedAt が無いなら実行
+    if (!this.deletedAt) {
       Object.assign(this, { deletedAt: new Date() })
     }
   }
 
   public removeDeleteFlag() {
-    if (this.deletedAt !== null) {
+    // deletedAt があるなら実行
+    if (this.deletedAt) {
       Object.assign(this, { deletedAt: null })
     }
   }
