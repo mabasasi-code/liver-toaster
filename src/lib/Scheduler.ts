@@ -14,7 +14,7 @@ export default class Scheduler {
   }
 
   public async run(): Promise<void> {
-    if (!this.job) {
+    if (this.job) {
       throw new Error('Job is already running')
     }
 
@@ -27,11 +27,11 @@ export default class Scheduler {
       async (date: Date) => { this.invoke(date) }
     )
 
-    CronLog.info('Scheduled job has started')
+    CronLog.info('Wait ...')
   }
 
   public async stop() {
-    if (this.job) {
+    if (!this.job) {
       const res = schedule.cancelJob(Scheduler.CRON_JOB_NAME)
       if (!res) {
         throw new Error('Failed to stop job')

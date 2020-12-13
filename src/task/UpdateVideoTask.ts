@@ -40,10 +40,10 @@ export default class UpdateVideoTask {
   /// ////////////////////////////////////////////////////////////
 
   protected async update(videoIds: string[], videos?: Video[]) {
-    this.logger.debug(`> Update videos: (${videoIds.length}) ` + JSON.stringify(videoIds))
+    this.logger.debug(`Update videos: (${videoIds.length}) ` + JSON.stringify(videoIds))
     if (videoIds.length === 0) {
       this.logger.debug('> Skip')
-      return
+      return false
     }
 
     // api を叩く (return { videoId: item | null })
@@ -61,27 +61,31 @@ export default class UpdateVideoTask {
     for (const videoId of videoIds) {
       const db = dbVideos[videoId] || null // null なら db に存在しない新規動画
       const api = apiVideos[videoId] || null // null なら 削除された動画
-      this.logger.trace(`[${idx++}/${length}] vid: ${videoId} (db:${Boolean(db)}, api: ${Boolean(api)})`)
+      this.logger.debug(`[${idx++}/${length}] vid: ${videoId} (db:${Boolean(db)}, api: ${Boolean(api)})`)
 
       if (api) {
         // API の値があるなら upsert (restore もする)
-        this.logger.trace(`> [${videoId}] upsert`)
-        const v = db || new Video()
-        v.assignAPI(api)
-        v.removeDeleteFlag()
-        await v.save()
+        const vi = db || new Video()
+        vi.assignAPI(api)
+        vi.removeDeleteFlag()
+
+        this.logger.trace(`> upsert: [${videoId}] ${vi.title}`)
+        await vi.save()
       } else {
         // API の値が無くて, db があるなら削除処理
         if (db) {
-          this.logger.trace(`> [${videoId}] delete`)
-          db.setDeleteFlag()
+          const vi = db
+          vi.setDeleteFlag()
+
+          this.logger.trace(`> delete: [${videoId}] ${vi.title}`)
           await db.save()
         } else {
-          this.logger.trace(`> [${videoId}] do nothing`)
+          // 実行されないはず
+          this.logger.warn(`> skip: [${videoId}] => no data`)
         }
       }
     }
 
-    this.logger.debug('> Success')
+    return true
   }
 }

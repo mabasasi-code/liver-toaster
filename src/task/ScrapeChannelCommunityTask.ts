@@ -6,8 +6,6 @@ import Tweeter from '../lib/util/Tweeter'
 import { get } from 'dot-prop'
 import Video from '../model/Video'
 import Checker from '../lib/util/Checker'
-import { IsNull } from 'typeorm'
-import delay from 'delay'
 
 export default class CheckChannelCommunityTask {
   protected logger: Logger
@@ -28,15 +26,6 @@ export default class CheckChannelCommunityTask {
     return await this.ckeck(channel, loadCookie, text)
   }
 
-  public async checkMonitoringChannel(loadCookie: boolean = false) {
-    // db から処理対象っぽい動画を全部取り出す
-    const channels = await Channel.find({ deletedAt: IsNull() })
-    for (const channel of channels) {
-      await this.checkFirst(channel, loadCookie)
-      await delay(1000)
-    }
-  }
-
   ///
 
   protected async ckeck(channel: Channel, loadCookie: boolean = false, text?: string) {
@@ -44,7 +33,7 @@ export default class CheckChannelCommunityTask {
     const latestPostId = channel.latestPostId // null なら一度も取得していない
     const latestMemberPostId = channel.latestMemberPostId // null なら一度も取得していない
 
-    this.logger.debug(`> Check community: ${channelId} (cookie: ${loadCookie})`)
+    this.logger.debug(`Check community: ${channelId} (cookie: ${loadCookie})`)
 
     // post を取得 (text があるなら検索)
     const post = text

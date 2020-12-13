@@ -40,10 +40,10 @@ export default class UpdateChannelTask {
   /// ////////////////////////////////////////////////////////////
 
   protected async update(channelIds: string[], channels?: Channel[]) {
-    this.logger.debug(`> Update channels: (${channelIds.length}) ` + JSON.stringify(channelIds))
+    this.logger.debug(`Update channels: (${channelIds.length}) ` + JSON.stringify(channelIds))
     if (channelIds.length === 0) {
       this.logger.debug('> Skip')
-      return
+      return false
     }
 
     // api を叩く (return { channelId: item | null })
@@ -61,27 +61,31 @@ export default class UpdateChannelTask {
     for (const channelId of channelIds) {
       const db = dbChannels[channelId] || null // null なら db に存在しない新規チャンネル
       const api = apiChannels[channelId] || null // null なら 削除されたチャンネル
-      this.logger.trace(`[${idx++}/${length}] cid: ${channelId} (db:${Boolean(db)}, api: ${Boolean(api)})`)
+      this.logger.debug(`[${idx++}/${length}] cid: ${channelId} (db:${Boolean(db)}, api: ${Boolean(api)})`)
 
       if (api) {
         // API の値があるなら upsert (restore もする)
-        this.logger.trace(`> [${channelId}] upsert`)
-        const v = db || new Channel()
-        v.assignAPI(api)
-        v.removeDeleteFlag()
-        await v.save()
+        const ch = db || new Channel()
+        ch.assignAPI(api)
+        ch.removeDeleteFlag()
+
+        this.logger.trace(`> [${channelId}] upsert: ${ch.title}`)
+        await ch.save()
       } else {
         // API の値が無くて, db があるなら削除処理
         if (db) {
-          this.logger.trace(`> [${channelId}] delete`)
-          db.setDeleteFlag()
-          await db.save()
+          const ch = db
+          ch.setDeleteFlag()
+
+          this.logger.trace(`> [${channelId}] delete: ${ch.title}`)
+          await ch.save()
         } else {
-          this.logger.trace(`> [${channelId}] do nothing`)
+          // 実行されないはず
+          this.logger.warn(`> skip: [${channelId}] => no data`)
         }
       }
     }
 
-    this.logger.debug('> Success')
+    return true
   }
 }
