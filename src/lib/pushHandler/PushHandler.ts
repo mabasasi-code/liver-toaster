@@ -1,20 +1,22 @@
-import BasePushHandler from './handler/BasePushHandler'
+import BaseHandler from './handler/BaseHandler'
 import YoutubeHandler from './handler/YoutubeHandler'
 import TestHandler from './handler/TestHandler'
-import PushInterface from '../interface/pushbullet/PushInterface'
-import { NotifyLog } from '../logger/Logger'
+import PushInterface from '../../interface/pushbullet/PushInterface'
+import { Logger } from 'log4js'
+import Loggable from '../util/Loggable'
 
-export default class MessageHandler {
+export default class PushHandler extends Loggable {
   protected dumpAllNotify: boolean
+  protected handlers: BaseHandler[]
 
-  protected handlers: BasePushHandler[]
+  constructor (logger: Logger, dumpAllNotify: boolean = false) {
+    super(logger)
 
-  constructor (dumpAllNotify: boolean = false) {
     this.dumpAllNotify = dumpAllNotify
 
     this.handlers = []
-    this.handlers.push(new YoutubeHandler())
-    this.handlers.push(new TestHandler())
+    this.handlers.push(new YoutubeHandler(logger))
+    this.handlers.push(new TestHandler(logger))
   }
 
   public async invoke (push: PushInterface) {
@@ -26,20 +28,20 @@ export default class MessageHandler {
         const isValid = handler.isValid(push)
         if (isValid) {
           // 初ヒットなら dump
-          if (hit === 0) NotifyLog.info(this.dumpString(push))
+          if (hit === 0) this.logger.info(this.dumpString(push))
           hit ++
 
           // 処理実行
           await handler.handle(push)
         }
       } catch (err) {
-        NotifyLog.error(err)
+        this.logger.error(err)
       }
     }
 
     // ノーヒットで config あったら通知
     if (hit === 0 && this.dumpAllNotify) {
-      NotifyLog.info(this.dumpString(push))
+      this.logger.info(this.dumpString(push))
     }
   }
 

@@ -1,8 +1,8 @@
 import PushbulletAPI from 'pushbullet'
 import PushInterface from '../interface/pushbullet/PushInterface'
 import TwitterUserInterface from '../interface/twitter/UserInterface'
-import { Log } from '../logger/Logger'
-import MessageHandler from './MessageHandler'
+import { Log, NotifyLog } from '../logger/Logger'
+import PushHandler from './pushHandler/PushHandler'
 import { TwitterAPI } from '../bootstrap'
 import UserInterface from '../interface/pushbullet/UserInterface'
 import config from '../config/config'
@@ -13,7 +13,7 @@ export default class Pushbullet {
   private encryptionKey: string
 
   private scheduler: Scheduler
-  private handler: MessageHandler
+  private handler: PushHandler
   private retry: boolean = false
 
   constructor (accessToken: string, encryptionKey: string = null) {
@@ -21,7 +21,7 @@ export default class Pushbullet {
     this.encryptionKey = encryptionKey
 
     this.scheduler = new Scheduler()
-    this.handler = new MessageHandler(config.mode.dumpAllNotify)
+    this.handler = new PushHandler(NotifyLog, config.mode.dumpAllNotify)
   }
 
   public async connect() {

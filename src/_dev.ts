@@ -13,7 +13,7 @@ import ScrapeChannelCommunity from './task/ScrapeChannelCommunityTask'
 import CheckChannelCommunityTask from './task/ScrapeChannelCommunityTask'
 
 import { Cookie, CookieMap } from 'cookiefile'
-import MessageHandler from './lib/MessageHandler'
+import PushHandler from './lib/pushHandler/PushHandler'
 
 const main = async () => {
   await bootstrap()
@@ -27,7 +27,7 @@ const main = async () => {
   const json = await fs.readFile('./storage/records/json/mirrorMemberStream.json', 'utf-8')
   const push = JSON.parse(json)
 
-  const handler = new MessageHandler(true)
+  const handler = new PushHandler(Log, true)
   await handler.invoke(push)
 
 

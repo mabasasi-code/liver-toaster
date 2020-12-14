@@ -1,7 +1,8 @@
-import PushInterface from '../../interface/pushbullet/PushInterface';
-import { NotifyLog } from '../../logger/Logger';
+import PushInterface from '../../../interface/pushbullet/PushInterface'
+import { NotifyLog } from '../../../logger/Logger'
+import Loggable from '../../util/Loggable'
 
-export default abstract class BasePushHandler {
+export default abstract class BaseHandler extends Loggable {
   public abstract isValid(push: PushInterface): boolean
   public abstract handle(push: PushInterface): Promise<void>
 

@@ -1,11 +1,17 @@
 import { cac } from 'cac'
+import { promises as fs } from 'fs'
 import bootstrap, { PushbulletInstance, YoutubeAPI } from './bootstrap'
-import { CliLog } from './logger/Logger'
+import config from './config/config'
+import PushHandler from './lib/pushHandler/PushHandler'
+import { CliLog, Log } from './logger/Logger'
 import Channel from './model/Channel'
 import TaskWrapper from './task/TaskWrapper'
 import UpdateChannelTask from './task/UpdateChannelTask'
 
 const cli = cac()
+
+/// ////////////////////////////////////////////////////////////
+// channel command
 
 cli
   .command('channel:add [...channelIds]', 'Add channel to monitor')
@@ -47,12 +53,35 @@ cli
   })
 })
 
+/// ////////////////////////////////////////////////////////////
+// util command
+
 cli
   .command('init', 'Initialize database')
   .action(async (options) => {
     const task = new TaskWrapper(CliLog)
     await task.checkAll(true)
   })
+
+cli
+  .command('test:json <dir>', 'Test Notify from json file (pushbullet)')
+  .action(async (dir, options) => {
+    // テストなのでログは cli のみ
+    // config を書き換える
+    config.mode.disableTweet = true
+
+    // ファイル読み込み
+    Log.info(`Load: "${dir}"`)
+    const json = await fs.readFile(dir, 'utf-8')
+    const push = JSON.parse(json)
+
+    // プッシュ処理
+    const handler = new PushHandler(Log, true)
+    await handler.invoke(push)
+  })
+
+/// ////////////////////////////////////////////////////////////
+// main command
 
 cli
   .command('[no args]', 'Run')

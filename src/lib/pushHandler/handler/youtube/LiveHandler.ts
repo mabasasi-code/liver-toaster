@@ -1,19 +1,20 @@
-import { YoutubeAPI } from '../../../bootstrap'
-import config from '../../../config/config'
-import PushInterface from '../../../interface/pushbullet/PushInterface'
-import { NotifyLog } from '../../../logger/Logger'
-import UpdateVideoTask from '../../../task/UpdateVideoTask'
-import BashYoutubeHandler from './BaseYoutubeHandler'
+import { Logger } from 'log4js'
+import { YoutubeAPI } from '../../../../bootstrap'
+import config from '../../../../config/config'
+import PushInterface from '../../../../interface/pushbullet/PushInterface'
+import UpdateVideoTask from '../../../../task/UpdateVideoTask'
+import BaseHandler from '../BaseHandler'
 
-export default class LiveHandler extends BashYoutubeHandler {
+export default class LiveHandler extends BaseHandler {
   public readonly TITLE_PREFIX = '🔴 '
   public readonly TITLE_SCHEDULE_PREFIX = '🔴 30 分後に '
 
   protected updateVideoTask: UpdateVideoTask
 
-  constructor () {
-    super()
-    this.updateVideoTask = new UpdateVideoTask(YoutubeAPI, NotifyLog)
+  constructor (logger: Logger) {
+    super(logger)
+
+    this.updateVideoTask = new UpdateVideoTask(YoutubeAPI, logger)
   }
 
   public isValid(push: PushInterface): boolean {
@@ -31,10 +32,10 @@ export default class LiveHandler extends BashYoutubeHandler {
 
   public async handle(push: PushInterface): Promise<void> {
     if (push.title.startsWith(this.TITLE_SCHEDULE_PREFIX)) {
-      NotifyLog.debug('> live schedule notify')
+      this.logger.debug('> live schedule notify')
       await this.updateVideoTask.updateById(push.notification_tag)
     } else {
-      NotifyLog.debug('> live start notify')
+      this.logger.debug('> live start notify')
       await this.updateVideoTask.updateById(push.notification_tag)
     }
   }

@@ -1,19 +1,22 @@
-import config from '../../../config/config'
-import { NotifyLog } from '../../../logger/Logger'
-import PushInterface from '../../../interface/pushbullet/PushInterface'
-import BashYoutubeHandler from './BaseYoutubeHandler'
-import { YoutubeAPI } from '../../../bootstrap'
-import Channel from '../../../model/Channel'
-import CheckChannelCommunityTask from '../../../task/ScrapeChannelCommunityTask'
+import config from '../../../../config/config'
+import PushInterface from '../../../../interface/pushbullet/PushInterface'
+import { YoutubeAPI } from '../../../../bootstrap'
+import Channel from '../../../../model/Channel'
+import CheckChannelCommunityTask from '../../../../task/ScrapeChannelCommunityTask'
+import BaseHandler from '../BaseHandler'
+import { Logger } from 'log4js'
+import UpdateVideoTask from '../../../../task/UpdateVideoTask'
 
-export default class MemberHandler extends BashYoutubeHandler {
+export default class MemberHandler extends BaseHandler {
   public readonly TITLE_SUFFIX = ' さんからのメンバー限定の投稿'
 
   protected checkChannelCommunityTask: CheckChannelCommunityTask
 
-  constructor () {
-    super()
-    this.checkChannelCommunityTask = new CheckChannelCommunityTask(YoutubeAPI, NotifyLog)
+  constructor (logger: Logger) {
+    super(logger)
+
+    const uvTask = new UpdateVideoTask(YoutubeAPI, logger)
+    this.checkChannelCommunityTask = new CheckChannelCommunityTask(uvTask, logger)
   }
 
   public isValid(push: PushInterface): boolean {
@@ -29,7 +32,7 @@ export default class MemberHandler extends BashYoutubeHandler {
   }
 
   public async handle(push: PushInterface): Promise<void> {
-    NotifyLog.debug('> member notify')
+    this.logger.debug('> member notify')
 
     // channel の抽出
     const channelTitle = push.title.replace(this.TITLE_SUFFIX, '')
@@ -37,7 +40,7 @@ export default class MemberHandler extends BashYoutubeHandler {
     if (!channel) {
       new Error(`Channel not found (title: ${channelTitle})`)
     }
-    NotifyLog.trace(`> channel: ${channel.channelId}, ${channel.title}`)
+    this.logger.trace(`> channel: ${channel.channelId}, ${channel.title}`)
 
     // communiry を覗き見してくる
     await this.checkChannelCommunityTask.checkMatchText(push.body, channel, true)

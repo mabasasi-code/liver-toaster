@@ -1,10 +1,9 @@
-import config from "../../config/config";
-import PushInterface from "../../interface/pushbullet/PushInterface";
-import { Log } from "../../logger/Logger";
-import Tweeter from "../util/Tweeter";
-import BasePushHandler from "./BasePushHandler";
+import config from '../../../config/config'
+import PushInterface from '../../../interface/pushbullet/PushInterface'
+import Tweeter from '../../util/Tweeter'
+import BaseHandler from './BaseHandler'
 
-export default class TestHandler extends BasePushHandler {
+export default class TestHandler extends BaseHandler {
   public readonly PUSHBULLET_PACKAGE_NAME = 'com.pushbullet.android'
   public readonly NOTIFY_TITLE = '通知のテスト'
 
@@ -23,7 +22,7 @@ export default class TestHandler extends BasePushHandler {
   }
 
   public async handle(push: PushInterface): Promise<void> {
-    Log.debug('> test notify')
+    this.logger.debug('> test notify')
     await Tweeter.builder().testNotify()
   }
 }
