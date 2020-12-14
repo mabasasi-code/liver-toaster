@@ -1,5 +1,6 @@
 import dateformat from 'dateformat'
 import schedule from 'node-schedule'
+import diffDates from 'diff-dates'
 import { CronLog } from '../logger/Logger'
 import TaskWrapper from '../task/TaskWrapper'
 
@@ -66,7 +67,8 @@ export default class Scheduler {
         await this.task.checkFeed()
       }
 
-      CronLog.info('[run] finish: ' + dateformat(date, 'yyyy-mm-dd HH:MM:ss'))
+      const msec = (diffDates(new Date(), date, 'milliseconds') / 1000).toFixed(2)
+      CronLog.info('[run] finish: ' + dateformat(date, 'yyyy-mm-dd HH:MM:ss') + ` (${msec} sec)`)
     } catch (err) {
       CronLog.error(err)
     }
