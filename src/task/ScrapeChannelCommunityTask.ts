@@ -6,14 +6,15 @@ import Tweeter from '../lib/util/Tweeter'
 import { get } from 'dot-prop'
 import Video from '../model/Video'
 import Checker from '../lib/util/Checker'
+import Loggable from '../lib/util/Loggable'
 
-export default class CheckChannelCommunityTask {
-  protected logger: Logger
+export default class CheckChannelCommunityTask extends Loggable {
   protected youtubeCommunityScraper: YoutubeCommunityScraper
   protected updateVideoTask: UpdateVideoTask
 
-  constructor (updateVideoTask: UpdateVideoTask, logger: Logger) {
-    this.logger = logger
+  constructor (logger: Logger, updateVideoTask: UpdateVideoTask) {
+    super(logger)
+
     this.updateVideoTask = updateVideoTask
     this.youtubeCommunityScraper = new YoutubeCommunityScraper()
   }

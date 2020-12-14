@@ -2,14 +2,15 @@ import { get } from 'dot-prop'
 import { Logger } from 'log4js'
 import { filterSeries } from 'p-iteration'
 import Parser from 'rss-parser'
+import Loggable from '../lib/util/Loggable'
 import Video from '../model/Video'
 
-export default class FetchFeedTask {
-  protected logger: Logger
+export default class FetchFeedTask extends Loggable {
   protected parser: Parser
 
   constructor (logger: Logger) {
-    this.logger = logger
+    super(logger)
+
     this.parser = new Parser()
   }
 

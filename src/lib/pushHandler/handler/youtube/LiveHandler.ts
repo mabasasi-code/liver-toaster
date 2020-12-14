@@ -14,7 +14,7 @@ export default class LiveHandler extends BaseHandler {
   constructor (logger: Logger) {
     super(logger)
 
-    this.updateVideoTask = new UpdateVideoTask(YoutubeAPI, logger)
+    this.updateVideoTask = new UpdateVideoTask(logger, YoutubeAPI)
   }
 
   public isValid(push: PushInterface): boolean {

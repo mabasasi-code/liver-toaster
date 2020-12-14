@@ -1,27 +1,26 @@
 import { Logger } from 'log4js'
 import { IsNull } from 'typeorm'
-import { YoutubeAPI } from '../bootstrap'
+import Youtube from '../lib/api/Youtube'
+import Loggable from '../lib/util/Loggable'
 import Channel from '../model/Channel'
 import FetchFeedTask from './FetchFeedTask'
 import CheckChannelCommunityTask from './ScrapeChannelCommunityTask'
 import UpdateChannelTask from './UpdateChannelTask'
 import UpdateVideoTask from './UpdateVideoTask'
 
-export default class TaskWrapper {
-  protected logger: Logger
-
+export default class TaskWrapper extends Loggable {
   protected updateChannelTask: UpdateChannelTask
   protected updateVideoTask: UpdateVideoTask
 
   protected checkChannelCommunityTask: CheckChannelCommunityTask
   protected fetchFeedTask: FetchFeedTask
 
-  constructor(logger: Logger) {
-    this.logger = logger
+  constructor(logger: Logger, youtube: Youtube) {
+    super(logger)
 
-    this.updateChannelTask = new UpdateChannelTask(YoutubeAPI, logger)
-    this.updateVideoTask = new UpdateVideoTask(YoutubeAPI, logger)
-    this.checkChannelCommunityTask = new CheckChannelCommunityTask(this.updateVideoTask, logger)
+    this.updateChannelTask = new UpdateChannelTask(logger, youtube)
+    this.updateVideoTask = new UpdateVideoTask(logger, youtube)
+    this.checkChannelCommunityTask = new CheckChannelCommunityTask(logger, this.updateVideoTask)
     this.fetchFeedTask = new FetchFeedTask(logger)
   }
 

@@ -3,15 +3,16 @@ import { mapSeries } from 'p-iteration'
 import { IsNull } from 'typeorm'
 import Youtube from '../lib/api/Youtube'
 import ArrayToObject from '../lib/util/ArrayToObject'
+import Loggable from '../lib/util/Loggable'
 import Channel from '../model/Channel'
 
-export default class UpdateChannelTask {
+export default class UpdateChannelTask extends Loggable {
   protected youtube: Youtube
-  protected logger: Logger
 
-  constructor (youtube: Youtube, logger: Logger) {
+  constructor (logger: Logger, youtube: Youtube) {
+    super(logger)
+
     this.youtube = youtube
-    this.logger = logger
   }
 
   public async updateById(channelId: string) {

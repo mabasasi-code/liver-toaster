@@ -15,8 +15,8 @@ export default class MemberHandler extends BaseHandler {
   constructor (logger: Logger) {
     super(logger)
 
-    const uvTask = new UpdateVideoTask(YoutubeAPI, logger)
-    this.checkChannelCommunityTask = new CheckChannelCommunityTask(uvTask, logger)
+    const uvTask = new UpdateVideoTask(logger, YoutubeAPI)
+    this.checkChannelCommunityTask = new CheckChannelCommunityTask(logger, uvTask)
   }
 
   public isValid(push: PushInterface): boolean {

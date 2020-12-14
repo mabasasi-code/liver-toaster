@@ -18,7 +18,7 @@ cli
   .action(async (channelIds, options) => {
     CliLog.info('[Command] Add channel')
 
-    const task = new UpdateChannelTask(YoutubeAPI, CliLog)
+    const task = new UpdateChannelTask(CliLog, YoutubeAPI)
     await task.updateByIds(channelIds)
   })
 
@@ -59,7 +59,7 @@ cli
 cli
   .command('init', 'Initialize database')
   .action(async (options) => {
-    const task = new TaskWrapper(CliLog)
+    const task = new TaskWrapper(CliLog, YoutubeAPI)
     await task.checkAll(true)
   })
 
