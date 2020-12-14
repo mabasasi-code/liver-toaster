@@ -75,6 +75,13 @@ export default class Video extends SoftDeleteModel {
         : defaultValue
     }
 
+    public channelUrl(type: string = '', defaultValue: any = null) {
+      const suffix = type ? '/' + type : ''
+      return this.videoId
+        ? 'https://www.youtube.com/channel/' + this.videoId + suffix
+        : defaultValue
+    }
+
     ///
     // function
 

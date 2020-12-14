@@ -60,9 +60,10 @@ export default class Channel extends SoftDeleteModel {
     /// ////////////////////////////////////////////////////////////
     // get
 
-    public url(defaultValue: any = null) {
+    public url(type: string = '', defaultValue: any = null) {
+      const suffix = type ? '/' + type : ''
       return this.channelId
-        ? 'https://www.youtube.com/channel/' + this.channelId
+        ? 'https://www.youtube.com/channel/' + this.channelId + suffix
         : defaultValue
     }
 

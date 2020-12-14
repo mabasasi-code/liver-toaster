@@ -45,20 +45,12 @@ export default class VideoSubscriber implements EntitySubscriberInterface<Video>
   ///
 
   public static async videoNotify(video: Video) {
-    // メン限はツイ時に予定と開始を埋める
-
     // 配信が始まってなくて、予定ツイをしてなさそうならする
     if (!video.actualStartTime && !video.actualEndTime) {
       EventLog.debug(`> [${video.videoId}] schedule stream (tweet: ${Boolean(video.scheduleTweetId)})`)
       if (!video.scheduleTweetId) {
-        if (video.isMemberOnly) {
-          const tweet = await Tweeter.builder().postMemberCommunityVideo(video.channelId)
-          video.scheduleTweetId = tweet.id_str
-          video.startTweetId = tweet.id_str
-        } else {
-          const tweet = await Tweeter.builder().scheduleStreaming(video)
-          video.scheduleTweetId = tweet.id_str
-        }
+        const tweet = await Tweeter.builder().scheduleStreaming(video)
+        video.scheduleTweetId = tweet.id_str
       }
       return
     }
@@ -67,13 +59,8 @@ export default class VideoSubscriber implements EntitySubscriberInterface<Video>
     if (video.actualStartTime && !video.actualEndTime) {
       EventLog.debug(`> [${video.videoId}] live streaming (tweet: ${Boolean(video.startTweetId)})`)
       if (!video.startTweetId) {
-        if (video.isMemberOnly) {
-          const tweet = await Tweeter.builder().postMemberCommunityVideo(video.channelId)
-          video.startTweetId = tweet.id_str
-        } else {
-          const tweet = await Tweeter.builder().startLiveStreaming(video)
-          video.startTweetId = tweet.id_str
-        }
+        const tweet = await Tweeter.builder().startLiveStreaming(video)
+        video.startTweetId = tweet.id_str
       }
       return
     }
@@ -88,13 +75,8 @@ export default class VideoSubscriber implements EntitySubscriberInterface<Video>
       }
 
       if (!video.endTweetId) {
-        if (video.isMemberOnly) {
-          const tweet = await Tweeter.builder().endMemberLiveStreamingReply(video)
-          video.endTweetId = tweet.id_str
-        } else {
-          const tweet = await Tweeter.builder().endLiveStreamingReply(video)
-          video.endTweetId = tweet.id_str
-        }
+        const tweet = await Tweeter.builder().endLiveStreaming(video)
+        video.endTweetId = tweet.id_str
       }
       return
     }

@@ -5,6 +5,9 @@ import config from '../../config/config';
 import { EventLog } from '../../logger/Logger';
 import Video from '../../model/Video';
 import TweetInterface from '../../interface/twitter/TweetInterface';
+import Channel from '../../model/Channel';
+import CommunityDomInterface from '../../interface/youtube/CommunityDomInterface';
+import Checker from './Checker';
 
 export default class Tweeter {
   protected isMute: boolean = false
@@ -41,6 +44,7 @@ export default class Tweeter {
   }
 
   /// ////////////////////////////////////////////////////////////
+  // test
 
   public async testNotify() {
     const lines = [
@@ -50,69 +54,84 @@ export default class Tweeter {
     return await this.tweet(lines.join('\n'))
   }
 
-  ///
+  /// ////////////////////////////////////////////////////////////
+  // video stream
+  // メンバーは video param かどうかで判断する
 
   public async scheduleStreaming(video: Video) {
-    const lines = [
-      dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
-      '🌾「📅 配信予定だよ！」',
-      this.stringEscape(video.title || '-タイトル不明-', 80),
-      '⏰: ' + this.timeString(video.scheduledStartTime),
-      video.url('-URL不明-'),
-    ]
+    const lines = [dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')]
+    if (!video.isMemberOnly) {
+      lines.push('🌾「📅 配信予定だよ！」')
+      lines.push(this.stringEscape(video.title || '-タイトル不明-', 80))
+      lines.push('⏰: ' + this.timeString(video.scheduledStartTime))
+      lines.push(video.url('-URL不明-'))
+    } else {
+      lines.push('🌾「📅 メンバー限定の投稿があったよ！」')
+      lines.push(video.channelUrl('community' ,'-URL不明-'))
+    }
+
     return await this.tweet(lines.join('\n'))
   }
 
   public async startLiveStreaming(video: Video) {
-    const lines = [
-      dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
-      '🌾「🔴 配信が始まったよ！」',
-      this.stringEscape(video.title || '-タイトル不明-', 80),
-      '⏰: ' + this.timeString(video.actualStartTime),
-      video.url('-URL不明-'),
-    ]
-    return await this.tweet(lines.join('\n'))
+    const lines = [dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')]
+    let inReply = undefined
+
+    if (!video.isMemberOnly) {
+      lines.push('🌾「🔴 配信が始まったよ！」')
+      lines.push(this.stringEscape(video.title || '-タイトル不明-', 80))
+      lines.push('⏰: ' + this.timeString(video.actualStartTime))
+      lines.push(video.url('-URL不明-'))
+    } else {
+      // sche ツイがあるならリプライにする
+      if (video.scheduleTweetId) {
+        inReply = video.scheduleTweetId
+      }
+
+      lines.push('🌾「🔴 メンバー限定の投稿があったよ！」')
+      lines.push(video.channelUrl('community' ,'-URL不明-'))
+    }
+
+    return await this.tweet(lines.join('\n'), inReply)
   }
 
-  public async endLiveStreamingReply(video: Video) {
-    const lines = [
-      dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
-      '🌾「配信が終わったよ！」',
-      '⏰: ' + this.timeString(video.actualStartTime, video.actualEndTime, true),
-    ]
+  public async endLiveStreaming(video: Video) {
+    // 終了ツイはリプライにする
+
+    const lines = [dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')]
+    if (!video.isMemberOnly) {
+      lines.push('🌾「配信が終わったよ！」')
+      lines.push(this.stringEscape(video.title || '-タイトル不明-', 80))
+    }
+    lines.push('⏰: ' + this.timeString(video.actualStartTime, video.actualEndTime, true))
+
     return await this.tweet(lines.join('\n'), video.startTweetId)
   }
 
-  ///
+  /// ////////////////////////////////////////////////////////////
+  // youtube community
 
-  public async postMemberCommunity(channelId: string, icon?: string) {
-    const url = channelId
-      ? 'https://www.youtube.com/channel/' + channelId + '/community'
-      : '-URL不明-'
+  public async postCommunity(channel: Channel, post: CommunityDomInterface) {
+    // 動画系は上の stream api を使って
 
-    const pref = icon ? icon + ' ' : ''
-    const lines = [
-      dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
-      `🌾「${pref}メンバー限定の投稿があったよ！」`,
-      url,
-    ]
+    // url は 全体の community にしておく
+    // 個々リンクは https://www.youtube.com/channel/UCxxx/community?lb=<postId>
+
+    const isMember = Checker.isMemberPost(post)
+    const type = Checker.getPostType(post)
+    const pref = type === 'image' ? '🎨 ' : ''
+    if (type === 'video') {
+      throw SyntaxError(`This post use streaming() id: ${post.postId}`)
+    }
+
+    const lines = [dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')]
+    if (!isMember) {
+      lines.push(`🌾「${pref}コミュニティに投稿があったよ！」`)
+    } else {
+      lines.push(`🌾「${pref}メンバー限定の投稿があったよ！」`)
+    }
+    lines.push(channel.url('community' ,'-URL不明-'))
     return await this.tweet(lines.join('\n'))
-  }
-
-  public async postMemberCommunityVideo(channelId: string) {
-    return this.postMemberCommunity(channelId, '🔴')
-  }
-
-  public async postMemberCommunityPicture(channelId: string) {
-    return this.postMemberCommunity(channelId, '🎨')
-  }
-
-  public async endMemberLiveStreamingReply(video: Video) {
-    const lines = [
-      dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
-      '⏰: ' + this.timeString(video.actualStartTime, video.actualEndTime, true),
-    ]
-    return await this.tweet(lines.join('\n'), video.startTweetId)
   }
 
   /// ////////////////////////////////////////////////////////////
@@ -120,8 +139,8 @@ export default class Tweeter {
   protected stringEscape (text: string, limit: number = 100): string {
     // twitterで反応する記号を無効に
     const escapeText = text
-      .replace(/#/g, '＃')
-      .replace(/@/g, '＠')
+      .replace(/#/g, '# ')
+      .replace(/@/g, '@ ')
 
     // 文字を切り詰める
     const limitText = escapeText.substr(0, limit)

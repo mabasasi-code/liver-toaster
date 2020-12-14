@@ -79,12 +79,9 @@ export default class CheckChannelCommunityTask {
         } else {
           this.logger.debug(`> Stream already exist (id: ${vid})`)
         }
-      } else if (type === 'image') {
-        // 画像でつぶやく
-        await Tweeter.builder().postMemberCommunityPicture(channelId)
       } else {
         // その他は通常つぶやき
-        await Tweeter.builder().postMemberCommunity(channelId)
+        await Tweeter.builder().postCommunity(channel, post)
       }
     } catch (err) {
       this.logger.error(err)
