@@ -1,12 +1,12 @@
 import { Logger } from 'log4js'
 import { IsNull } from 'typeorm'
-import Youtube from '../lib/api/Youtube'
-import Loggable from '../lib/util/Loggable'
-import Channel from '../model/Channel'
-import FetchFeedTask from './FetchFeedTask'
-import CheckChannelCommunityTask from './ScrapeChannelCommunityTask'
-import UpdateChannelTask from './UpdateChannelTask'
-import UpdateVideoTask from './UpdateVideoTask'
+import Youtube from '../api/Youtube'
+import Loggable from '../util/Loggable'
+import Channel from '../../model/Channel'
+import FetchFeedTask from './task/FetchFeedTask'
+import CheckChannelCommunityTask from './task/ScrapeChannelCommunityTask'
+import UpdateChannelTask from './task/UpdateChannelTask'
+import UpdateVideoTask from './task/UpdateVideoTask'
 
 export default class TaskWrapper extends Loggable {
   protected updateChannelTask: UpdateChannelTask

@@ -4,7 +4,7 @@ import config from './config/config'
 import Twitter from './lib/api/Twitter';
 import Youtube from './lib/api/Youtube';
 import Pushbullet from './lib/Pushbullet';
-import Scheduler from './lib/Scheduler';
+import TaskScheduler from './lib/task/TaskScheduler';
 
 // TODO: 仮実装
 
@@ -12,7 +12,7 @@ export let YoutubeAPI: Youtube
 export let TwitterAPI: Twitter
 
 export let PushbulletInstance: Pushbullet
-export let SchedulerInstance: Scheduler
+export let SchedulerInstance: TaskScheduler
 
 export default async () => {
   await createConnection()

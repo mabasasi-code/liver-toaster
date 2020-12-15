@@ -1,10 +1,10 @@
 import { Logger } from 'log4js'
 import { mapSeries } from 'p-iteration'
 import { IsNull } from 'typeorm'
-import Youtube from '../lib/api/Youtube'
-import ArrayToObject from '../lib/util/ArrayToObject'
-import Loggable from '../lib/util/Loggable'
-import Channel from '../model/Channel'
+import Youtube from '../../api/Youtube'
+import ArrayToObject from '../../util/ArrayToObject'
+import Loggable from '../../util/Loggable'
+import Channel from '../../../model/Channel'
 
 export default class UpdateChannelTask extends Loggable {
   protected youtube: Youtube

@@ -1,12 +1,12 @@
-import Channel from '../model/Channel'
-import YoutubeCommunityScraper from '../lib/scraper/YoutubeChannelCommunity'
+import Channel from '../../../model/Channel'
+import YoutubeCommunityScraper from '../../scraper/YoutubeChannelCommunity'
 import { Logger } from 'log4js'
 import UpdateVideoTask from './UpdateVideoTask'
-import Tweeter from '../lib/util/Tweeter'
+import Tweeter from '../../util/Tweeter'
 import { get } from 'dot-prop'
-import Video from '../model/Video'
-import Checker from '../lib/util/Checker'
-import Loggable from '../lib/util/Loggable'
+import Video from '../../../model/Video'
+import Checker from '../../util/Checker'
+import Loggable from '../../util/Loggable'
 
 export default class CheckChannelCommunityTask extends Loggable {
   protected youtubeCommunityScraper: YoutubeCommunityScraper

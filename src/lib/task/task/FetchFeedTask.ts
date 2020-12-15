@@ -2,8 +2,8 @@ import { get } from 'dot-prop'
 import { Logger } from 'log4js'
 import { filterSeries } from 'p-iteration'
 import Parser from 'rss-parser'
-import Loggable from '../lib/util/Loggable'
-import Video from '../model/Video'
+import Loggable from '../../util/Loggable'
+import Video from '../../../model/Video'
 
 export default class FetchFeedTask extends Loggable {
   protected parser: Parser

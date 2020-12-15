@@ -1,17 +1,18 @@
 import dateformat from 'dateformat'
 import schedule from 'node-schedule'
 import diffDates from 'diff-dates'
-import { CronLog } from '../logger/Logger'
-import TaskWrapper from '../task/TaskWrapper'
+import { CronLog } from '../../logger/Logger'
+import TaskWrapper from './TaskWrapper'
+import { YoutubeAPI } from '../../bootstrap'
 
-export default class Scheduler {
+export default class TaskScheduler {
   protected static CRON_JOB_NAME: string = 'cron'
 
   protected job: schedule.Job
   protected task: TaskWrapper
 
   constructor () {
-    this.task = new TaskWrapper(CronLog)
+    this.task = new TaskWrapper(CronLog, YoutubeAPI)
   }
 
   public async run(): Promise<void> {
@@ -23,7 +24,7 @@ export default class Scheduler {
     await this.task.checkAll(true)
 
     this.job = schedule.scheduleJob(
-      Scheduler.CRON_JOB_NAME,
+      TaskScheduler.CRON_JOB_NAME,
       '*/10 * * * *',
       async (date: Date) => { this.invoke(date) }
     )
@@ -33,7 +34,7 @@ export default class Scheduler {
 
   public async stop() {
     if (!this.job) {
-      const res = schedule.cancelJob(Scheduler.CRON_JOB_NAME)
+      const res = schedule.cancelJob(TaskScheduler.CRON_JOB_NAME)
       if (!res) {
         throw new Error('Failed to stop job')
       }

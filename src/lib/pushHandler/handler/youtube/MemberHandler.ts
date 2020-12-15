@@ -2,10 +2,10 @@ import config from '../../../../config/config'
 import PushInterface from '../../../../interface/pushbullet/PushInterface'
 import { YoutubeAPI } from '../../../../bootstrap'
 import Channel from '../../../../model/Channel'
-import CheckChannelCommunityTask from '../../../../task/ScrapeChannelCommunityTask'
+import CheckChannelCommunityTask from '../../../task/task/ScrapeChannelCommunityTask'
 import BaseHandler from '../BaseHandler'
 import { Logger } from 'log4js'
-import UpdateVideoTask from '../../../../task/UpdateVideoTask'
+import UpdateVideoTask from '../../../task/task/UpdateVideoTask'
 
 export default class MemberHandler extends BaseHandler {
   public readonly TITLE_SUFFIX = ' さんからのメンバー限定の投稿'

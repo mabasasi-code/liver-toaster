@@ -6,13 +6,13 @@ import PushHandler from './pushHandler/PushHandler'
 import { TwitterAPI } from '../bootstrap'
 import UserInterface from '../interface/pushbullet/UserInterface'
 import config from '../config/config'
-import Scheduler from './Scheduler'
+import TaskScheduler from './task/TaskScheduler'
 
 export default class Pushbullet {
   private accessToken: string
   private encryptionKey: string
 
-  private scheduler: Scheduler
+  private scheduler: TaskScheduler
   private handler: PushHandler
   private retry: boolean = false
 
@@ -20,7 +20,7 @@ export default class Pushbullet {
     this.accessToken = accessToken
     this.encryptionKey = encryptionKey
 
-    this.scheduler = new Scheduler()
+    this.scheduler = new TaskScheduler()
     this.handler = new PushHandler(NotifyLog, config.mode.dumpAllNotify)
   }
 

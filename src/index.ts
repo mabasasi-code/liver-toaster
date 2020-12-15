@@ -5,8 +5,8 @@ import config from './config/config'
 import PushHandler from './lib/pushHandler/PushHandler'
 import { CliLog, Log } from './logger/Logger'
 import Channel from './model/Channel'
-import TaskWrapper from './task/TaskWrapper'
-import UpdateChannelTask from './task/UpdateChannelTask'
+import TaskWrapper from './lib/task/TaskWrapper'
+import UpdateChannelTask from './lib/task/task/UpdateChannelTask'
 
 const cli = cac()
 

@@ -2,7 +2,7 @@ import { Logger } from 'log4js'
 import { YoutubeAPI } from '../../../../bootstrap'
 import config from '../../../../config/config'
 import PushInterface from '../../../../interface/pushbullet/PushInterface'
-import UpdateVideoTask from '../../../../task/UpdateVideoTask'
+import UpdateVideoTask from '../../../task/task/UpdateVideoTask'
 import BaseHandler from '../BaseHandler'
 
 export default class LiveHandler extends BaseHandler {
