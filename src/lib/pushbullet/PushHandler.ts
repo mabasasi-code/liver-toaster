@@ -25,7 +25,7 @@ export default class PushHandler extends Loggable {
     for (const handler of this.handlers) {
       try {
         // 処理対象かどうか判定
-        const isValid = handler.isValid(push)
+        const isValid = await handler.isValid(push)
         if (isValid) {
           // 初ヒットなら dump
           if (hit === 0) this.logger.info(this.dumpString(push))

@@ -3,7 +3,7 @@ import { NotifyLog } from '../../../logger/Logger'
 import Loggable from '../../util/Loggable'
 
 export default abstract class BaseHandler extends Loggable {
-  public abstract isValid(push: PushInterface): boolean
+  public abstract isValid(push: PushInterface): Promise<boolean>
   public abstract handle(push: PushInterface): Promise<void>
 
   ///
