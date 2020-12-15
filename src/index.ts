@@ -1,8 +1,8 @@
 import { cac } from 'cac'
 import { promises as fs } from 'fs'
-import bootstrap, { PushbulletInstance, YoutubeAPI } from './bootstrap'
+import bootstrap, { PushbulletInstance, SchedulerInstance, YoutubeAPI } from './bootstrap'
 import config from './config/config'
-import PushHandler from './lib/pushHandler/PushHandler'
+import PushHandler from './lib/pushbullet/PushHandler'
 import { CliLog, Log } from './logger/Logger'
 import Channel from './model/Channel'
 import TaskWrapper from './lib/task/TaskWrapper'
@@ -91,7 +91,8 @@ cli
     }
 
     CliLog.info('[Command] Run')
-    await PushbulletInstance.connect()
+    await SchedulerInstance.run()
+    await PushbulletInstance.run()
   })
 
 /// ////////////////////////////////////////////////////////////

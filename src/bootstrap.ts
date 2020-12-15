@@ -1,10 +1,11 @@
 
-import { createConnection } from 'typeorm';
+import { createConnection } from 'typeorm'
 import config from './config/config'
-import Twitter from './lib/api/Twitter';
-import Youtube from './lib/api/Youtube';
-import Pushbullet from './lib/Pushbullet';
-import TaskScheduler from './lib/task/TaskScheduler';
+import Twitter from './lib/api/Twitter'
+import Youtube from './lib/api/Youtube'
+import Pushbullet from './lib/pushbullet/Pushbullet'
+import TaskScheduler from './lib/task/TaskScheduler'
+import { CronLog, NotifyLog } from './logger/Logger'
 
 // TODO: 仮実装
 
@@ -27,9 +28,13 @@ export default async () => {
   )
 
   PushbulletInstance = new Pushbullet(
+    NotifyLog,
     config.pushbullet.accessToken,
     config.pushbullet.encryptionKey
   )
 
-  SchedulerInstance = PushbulletInstance.getScheduler()
+  SchedulerInstance = new TaskScheduler(
+    CronLog,
+    YoutubeAPI,
+  )
 }

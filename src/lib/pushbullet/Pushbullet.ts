@@ -1,40 +1,44 @@
 import PushbulletAPI from 'pushbullet'
-import PushInterface from '../interface/pushbullet/PushInterface'
-import TwitterUserInterface from '../interface/twitter/UserInterface'
-import { Log, NotifyLog } from '../logger/Logger'
-import PushHandler from './pushHandler/PushHandler'
-import { TwitterAPI } from '../bootstrap'
-import UserInterface from '../interface/pushbullet/UserInterface'
-import config from '../config/config'
-import TaskScheduler from './task/TaskScheduler'
+import PushInterface from '../../interface/pushbullet/PushInterface'
+import TwitterUserInterface from '../../interface/twitter/UserInterface'
+import PushHandler from './PushHandler'
+import { TwitterAPI } from '../../bootstrap'
+import UserInterface from '../../interface/pushbullet/UserInterface'
+import config from '../../config/config'
+import Loggable from '../util/Loggable'
+import { Logger } from 'log4js'
 
-export default class Pushbullet {
+export default class Pushbullet extends Loggable {
   private accessToken: string
   private encryptionKey: string
 
-  private scheduler: TaskScheduler
-  private handler: PushHandler
-  private retry: boolean = false
+  private retry: boolean = false // リトライ中かどうか
 
-  constructor (accessToken: string, encryptionKey: string = null) {
+  protected stream: any
+  protected handler: PushHandler
+
+  constructor (logger: Logger, accessToken: string, encryptionKey: string = null) {
+    super(logger)
+
     this.accessToken = accessToken
     this.encryptionKey = encryptionKey
-
-    this.scheduler = new TaskScheduler()
-    this.handler = new PushHandler(NotifyLog, config.mode.dumpAllNotify)
+    this.handler = new PushHandler(logger, config.mode.dumpAllNotify)
   }
 
-  public async connect() {
-    const stream = await this.getStream()
+  public async run() {
+    const stream = this.stream || await this.initStream()
     stream.connect()
     return stream
   }
 
-  public getScheduler() {
-    return this.scheduler
+  public async stop() {
+    const stream = this.stream
+    if (stream) {
+      stream.close()
+    }
   }
 
-  public async getStream(): Promise<any> {
+  protected async initStream(): Promise<any> {
     return new Promise(async (resolve, reject) => {
       const twuser = await TwitterAPI.getClientUser()
 
@@ -53,9 +57,8 @@ export default class Pushbullet {
         stream.on('connect', async () => {
           try {
             this.dumpListenLog(user, twuser)
-            await this.scheduler.run()
           } catch (err) {
-            Log.error(err)
+            this.logger.error(err)
           }
         })
 
@@ -65,19 +68,17 @@ export default class Pushbullet {
               await this.handler.invoke(push)
             }
           } catch (err) {
-            Log.error(err)
+            this.logger.error(err)
           }
         })
 
         stream.on('error', (err: any) => {
-          Log.error(err)
-
-          this.scheduler.stop()
+          this.logger.error(err)
           stream.close()
 
           if (!this.retry) {
             this.retry = true
-            Log.error('Stream closed. Try after 1 minutes')
+            this.logger.error('Stream closed. Try after 1 minutes')
             setTimeout(() => {
               this.retry = false
               stream.connect()
@@ -98,10 +99,10 @@ export default class Pushbullet {
     const client = (twUser.name || '--') + ' (@' + (twUser.screen_name || '--') + ')'
     const target = config.youtube.channelName || 'all'
 
-    Log.info('Stream connected!')
-    Log.info('> device: ' + device)
-    Log.info('> client: ' + client)
-    Log.info('> setup: ' + JSON.stringify(config.mode))
-    Log.info('> target: ' + target)
+    this.logger.info('Stream connected!')
+    this.logger.info('> device: ' + device)
+    this.logger.info('> client: ' + client)
+    this.logger.info('> setup: ' + JSON.stringify(config.mode))
+    this.logger.info('> target: ' + target)
   }
 }

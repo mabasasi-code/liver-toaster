@@ -13,7 +13,7 @@ import ScrapeChannelCommunity from './lib/task/task/ScrapeChannelCommunityTask'
 import CheckChannelCommunityTask from './lib/task/task/ScrapeChannelCommunityTask'
 
 import { Cookie, CookieMap } from 'cookiefile'
-import PushHandler from './lib/pushHandler/PushHandler'
+import PushHandler from './lib/pushbullet/PushHandler'
 
 const main = async () => {
   await bootstrap()

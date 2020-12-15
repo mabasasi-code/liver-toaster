@@ -3,16 +3,20 @@ import schedule from 'node-schedule'
 import diffDates from 'diff-dates'
 import { CronLog } from '../../logger/Logger'
 import TaskWrapper from './TaskWrapper'
-import { YoutubeAPI } from '../../bootstrap'
+import Loggable from '../util/Loggable'
+import { Logger } from 'log4js'
+import Youtube from '../api/Youtube'
 
-export default class TaskScheduler {
+export default class TaskScheduler extends Loggable {
   protected static CRON_JOB_NAME: string = 'cron'
 
   protected job: schedule.Job
   protected task: TaskWrapper
 
-  constructor () {
-    this.task = new TaskWrapper(CronLog, YoutubeAPI)
+  constructor (logger: Logger, youtube: Youtube) {
+    super(logger)
+
+    this.task = new TaskWrapper(logger, youtube)
   }
 
   public async run(): Promise<void> {
@@ -21,15 +25,17 @@ export default class TaskScheduler {
     }
 
     CronLog.info('Scheduler initialize')
-    await this.task.checkAll(true)
+    const date = new Date()
 
+    await this.task.checkAll(true)
     this.job = schedule.scheduleJob(
       TaskScheduler.CRON_JOB_NAME,
       '*/10 * * * *',
       async (date: Date) => { this.invoke(date) }
     )
 
-    CronLog.info('Wait ...')
+    const msec = (diffDates(new Date(), date, 'milliseconds') / 1000).toFixed(2)
+    CronLog.info(`Init success! (${msec} sec)`)
   }
 
   public async stop() {
