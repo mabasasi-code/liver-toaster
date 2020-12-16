@@ -7,6 +7,7 @@ import { CliLog, Log } from './logger/Logger'
 import Channel from './model/Channel'
 import TaskWrapper from './lib/task/TaskWrapper'
 import UpdateChannelTask from './lib/task/task/UpdateChannelTask'
+import Tweeter from './lib/util/Tweeter'
 
 const cli = cac()
 
@@ -59,6 +60,8 @@ cli
 cli
   .command('init', 'Initialize database')
   .action(async (options) => {
+    CliLog.info('[Command] Database initialize')
+
     const task = new TaskWrapper(CliLog, YoutubeAPI)
     await task.checkAll(true)
   })
@@ -66,6 +69,8 @@ cli
 cli
   .command('test:json <dir>', 'Test Notify from json file (pushbullet)')
   .action(async (dir, options) => {
+    CliLog.info('[Command] Test json notify')
+
     // テストなのでログは cli のみ
     // config を書き換える
     config.mode.disableTweet = true
@@ -79,6 +84,16 @@ cli
     const handler = new PushHandler(Log, true)
     await handler.invoke(push)
   })
+
+cli
+.command('tweet <message>', 'Test Notify from json file (pushbullet)')
+.action(async (message, options) => {
+  CliLog.info('[Command] Tweet')
+
+  if (message) {
+    await Tweeter.builder().simpleTweet(message)
+  }
+})
 
 /// ////////////////////////////////////////////////////////////
 // main command

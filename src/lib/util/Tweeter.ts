@@ -46,6 +46,14 @@ export default class Tweeter {
   /// ////////////////////////////////////////////////////////////
   // test
 
+  public async simpleTweet(text: string, inReplyTweetId?: string) {
+    const lines = [
+      dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
+      this.stringEscape(text, 130)
+    ]
+    return await this.tweet(lines.join('\n'), inReplyTweetId)
+  }
+
   public async testNotify() {
     const lines = [
       dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss'),
