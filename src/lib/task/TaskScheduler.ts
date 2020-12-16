@@ -67,7 +67,7 @@ export default class TaskScheduler extends Loggable {
       await this.task.checkVideos()
 
       // community を漁ってくる (30 分おきにメンバーチェック)
-      await this.task.checkCommunity(minute % 30 === 0)
+      await this.task.checkCommunity(minute % 20 === 0)
 
       // 20 分おきに feed を拾ってくる
       if (minute % 20 === 0) {
