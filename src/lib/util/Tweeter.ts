@@ -38,7 +38,8 @@ export default class Tweeter {
     }
 
     const stub = this.isMute ? ' (stub)' : ''
-    EventLog.info(`> tweet${stub}\n${tweet.text} [EOL]`)
+    const reply = inReplyTweetId ? ` => ${inReplyTweetId}` : ''
+    EventLog.info(`> tweet${reply}${stub}\n${tweet.text} [EOL]`)
 
     return tweet
   }
@@ -139,6 +140,18 @@ export default class Tweeter {
       lines.push(`🌾「${pref}メンバー限定の投稿があったよ！」`)
     }
     lines.push(channel.url('community' ,'-URL不明-'))
+    return await this.tweet(lines.join('\n'))
+  }
+
+  /// ////////////////////////////////////////////////////////////
+  // achive
+
+  public async achiveChannelOfSubscriber(channel: Channel, achiveSubscriber: number) {
+    const num = achiveSubscriber.toLocaleString()
+    const lines = [dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')]
+    lines.push(`🏆「${channel.title}」チャンネルの登録者数が ${num} 人になりました`)
+    lines.push(channel.url(null ,'-URL不明-'))
+
     return await this.tweet(lines.join('\n'))
   }
 

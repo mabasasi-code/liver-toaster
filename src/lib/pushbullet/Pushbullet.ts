@@ -97,12 +97,10 @@ export default class Pushbullet extends Loggable {
   protected dumpListenLog(pushUser: UserInterface, twUser: TwitterUserInterface) {
     const device = (pushUser.name || '--') + ' (' + pushUser.iden + ')'
     const client = (twUser.name || '--') + ' (@' + (twUser.screen_name || '--') + ')'
-    const target = config.youtube.channelName || 'all'
 
     this.logger.info('Stream connected!')
     this.logger.info('> device: ' + device)
     this.logger.info('> client: ' + client)
     this.logger.info('> setup: ' + JSON.stringify(config.mode))
-    this.logger.info('> target: ' + target)
   }
 }

@@ -43,6 +43,9 @@ export default class Channel extends SoftDeleteModel {
     ///
     // parameter
 
+    @Column('integer', { nullable: true })
+    achivementSubscriber?: number
+
     @Column('text', { nullable: true })
     latestPostId?: string
 
