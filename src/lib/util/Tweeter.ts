@@ -38,7 +38,8 @@ export default class Tweeter {
     }
 
     const stub = this.isMute ? ' (stub)' : ''
-    EventLog.info(`> tweet${stub}\n${tweet.text} [EOL]`)
+    const reply = inReplyTweetId ? ` => ${inReplyTweetId}` : ''
+    EventLog.info(`> tweet${reply}${stub}\n${tweet.text} [EOL]`)
 
     return tweet
   }
