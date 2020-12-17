@@ -48,14 +48,14 @@ export default class VideoSubscriber implements EntitySubscriberInterface<Channe
     if (nowSubsc >= notifySubsc + fund) {
       const over = nowSubsc % fund // 差分を取得
       const achiveSubsc = nowSubsc - over // 通知する登録者数
-
-      channel.achivementSubscriber = achiveSubsc
       EventLog.debug(`> [${channel.channelId}] Achivement subscriber ${notifySubsc} => ${achiveSubsc} (fund: ${fund})`)
 
       // 今まで通知したことが無かったらしない
       if (notifySubsc > 0) {
         await Tweeter.builder().achiveChannelOfSubscriber(channel, achiveSubsc)
       }
+
+      channel.achivementSubscriber = achiveSubsc
     }
 
     // あまりにも数字が下がったら achive ラインを下げる
@@ -63,8 +63,9 @@ export default class VideoSubscriber implements EntitySubscriberInterface<Channe
       if (nowSubsc <= notifySubsc - 1000) {
         const over = nowSubsc % fund // 差分を取得
         const achiveSubsc = nowSubsc - over // 通知する登録者数
-        channel.achivementSubscriber = achiveSubsc
         EventLog.warn(`> [${channel.channelId}] Achivement subscriber ${notifySubsc} => ${achiveSubsc} (fund: ${fund})`)
+
+        channel.achivementSubscriber = achiveSubsc
       }
     }
   }
