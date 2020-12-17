@@ -144,6 +144,18 @@ export default class Tweeter {
   }
 
   /// ////////////////////////////////////////////////////////////
+  // achive
+
+  public async achiveChannelOfSubscriber(channel: Channel, achiveSubscriber: number) {
+    const num = achiveSubscriber.toLocaleString()
+    const lines = [dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')]
+    lines.push(`🏆「${channel.title}」チャンネルの登録者数が ${num} 人になりました`)
+    lines.push(channel.url(null ,'-URL不明-'))
+
+    return await this.tweet(lines.join('\n'))
+  }
+
+  /// ////////////////////////////////////////////////////////////
 
   protected stringEscape (text: string, limit: number = 100): string {
     // twitterで反応する記号を無効に

@@ -14,9 +14,13 @@ import CheckChannelCommunityTask from './lib/task/task/ScrapeChannelCommunityTas
 
 import { Cookie, CookieMap } from 'cookiefile'
 import PushHandler from './lib/pushbullet/PushHandler'
+import ChannelSubscriber from './subscriber/ChannelSubscriber'
 
 const main = async () => {
   await bootstrap()
+
+  const channel = await Channel.findOne({ 'channelId': 'UC1519-d1jzGiL1MPTxEdtSA' })
+  await ChannelSubscriber.channelAchivement(channel)
 
   // const channelId = 'UC1519-d1jzGiL1MPTxEdtSA'
   // const channel = await Channel.findOne({ channelId })
@@ -24,11 +28,11 @@ const main = async () => {
   // const scrape = new CheckChannelCommunityTask(YoutubeAPI, Log)
   // await scrape.checkFirst(channel, true)
 
-  const json = await fs.readFile('./storage/records/json/mirrorMemberStream.json', 'utf-8')
-  const push = JSON.parse(json)
+  // const json = await fs.readFile('./storage/records/json/mirrorMemberStream.json', 'utf-8')
+  // const push = JSON.parse(json)
 
-  const handler = new PushHandler(Log, true)
-  await handler.invoke(push)
+  // const handler = new PushHandler(Log, true)
+  // await handler.invoke(push)
 
 
   // const res = await YoutubeAPI.fetchVideo('jY26msbzvYI')
