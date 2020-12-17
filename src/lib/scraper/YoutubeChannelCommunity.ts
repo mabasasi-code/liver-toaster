@@ -39,6 +39,7 @@ export default class YoutubeCommunityScraper {
     })
 
     const doc = HTMLParser(src.data)
+
     const posts = this.searchPosts(doc)
     return posts
   }
@@ -65,7 +66,7 @@ export default class YoutubeCommunityScraper {
     const scripts = doc.querySelectorAll('script')
     for (const script of scripts) {
       const text = script.text
-      if (text.includes('window["ytInitialData"]')) {
+      if (text.includes('ytInitialData')) {
         // {} の位置を探って json にする
         const st = text.indexOf('{')
         const ed = text.lastIndexOf('};')
