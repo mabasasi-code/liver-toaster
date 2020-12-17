@@ -45,7 +45,7 @@ export default class VideoSubscriber implements EntitySubscriberInterface<Channe
     const notifySubsc = channel.achivementSubscriber || 0 // 通知した登録者数
 
     // 通知してない数字になったら通知
-    if (nowSubsc > notifySubsc + fund) {
+    if (nowSubsc >= notifySubsc + fund) {
       const over = nowSubsc % fund // 差分を取得
       const achiveSubsc = nowSubsc - over // 通知する登録者数
 
@@ -60,7 +60,7 @@ export default class VideoSubscriber implements EntitySubscriberInterface<Channe
 
     // あまりにも数字が下がったら achive ラインを下げる
     if (notifySubsc > 0) {
-      if (nowSubsc < notifySubsc - 1000) {
+      if (nowSubsc <= notifySubsc - 1000) {
         const over = nowSubsc % fund // 差分を取得
         const achiveSubsc = nowSubsc - over // 通知する登録者数
         channel.achivementSubscriber = achiveSubsc
