@@ -1,6 +1,6 @@
 import PushbulletAPI from 'pushbullet'
 import PushInterface from '../../interface/pushbullet/PushInterface'
-import TwitterUserInterface from '../../interface/twitter/UserInterface'
+import TwitterUserInterface from '../../interface/twitter/TwitterUserInterface'
 import PushHandler from './PushHandler'
 import { TwitterAPI } from '../../bootstrap'
 import UserInterface from '../../interface/pushbullet/UserInterface'

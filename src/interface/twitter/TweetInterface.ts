@@ -1,4 +1,5 @@
-import UserInterface from "./UserInterface";
+import TwitterEntityInterface from './TwitterEntityInterface'
+import TwitterUserInterface from './TwitterUserInterface'
 
 // TODO: quote 対応
 export default interface TweetInterface {
@@ -7,14 +8,14 @@ export default interface TweetInterface {
   // id: string // do not use!
   id_str: string // 0 はダミー
   text: string
-  entities?: { hashtags: [], symbols: [], user_mentions: [], urls: [] } | null,
-  source?: string // '<a href="https://twitter.com/shioxin_bot" rel="nofollow">activity_bot</a>',
+  entities?: TwitterEntityInterface
+  source?: string // '<a href='https://twitter.com/shioxin_bot' rel='nofollow'>activity_bot</a>',
   in_reply_to_status_id?: string
   in_reply_to_status_id_str?: string
   in_reply_to_user_id?: string
   in_reply_to_user_id_str?: string
   in_reply_to_screen_name?: string
-  user?: UserInterface
+  user?: TwitterUserInterface
   retweet_count?: number
   favorite_count?: number
   favorited?: boolean

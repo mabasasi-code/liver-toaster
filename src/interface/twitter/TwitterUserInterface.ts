@@ -1,5 +1,6 @@
+import TwitterEntityInterface from "./TwitterEntityInterface";
 
-export default interface UserInterface {
+export default interface TwitterUserInterface {
   created_at: string // 'Tue Dec 31 09:36:07 +0000 2019'
 
   // id: number // do not use!
@@ -9,7 +10,7 @@ export default interface UserInterface {
   location?: string
   description?: string
   url?: string
-  entities?: { description: { urls: [] } }
+  entities?: { description: TwitterEntityInterface }
 
   followers_count: number
   friends_count: number

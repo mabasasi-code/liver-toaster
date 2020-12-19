@@ -1,13 +1,13 @@
 import dateformat from 'dateformat'
 import diffDates from 'diff-dates'
-import { TwitterAPI } from '../../bootstrap';
-import config from '../../config/config';
-import { EventLog } from '../../logger/Logger';
-import Video from '../../model/Video';
-import TweetInterface from '../../interface/twitter/TweetInterface';
-import Channel from '../../model/Channel';
-import CommunityDomInterface from '../../interface/youtube/CommunityDomInterface';
-import Checker from './Checker';
+import { TwitterAPI } from '../../bootstrap'
+import config from '../../config/config'
+import { EventLog } from '../../logger/Logger'
+import Video from '../../model/Video'
+import TweetInterface from '../../interface/twitter/TweetInterface'
+import Channel from '../../model/Channel'
+import CommunityDomInterface from '../../interface/youtube/CommunityDomInterface'
+import Checker from './Checker'
 
 export default class Tweeter {
   protected isMute: boolean = false
