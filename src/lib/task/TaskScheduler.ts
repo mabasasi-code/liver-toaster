@@ -6,17 +6,21 @@ import TaskWrapper from './TaskWrapper'
 import Loggable from '../util/Loggable'
 import { Logger } from 'log4js'
 import Youtube from '../api/Youtube'
+import PostLoggingDM from './task/postLoggingDM'
+import SystemVariable from '../SystemVariable'
 
 export default class TaskScheduler extends Loggable {
   protected static CRON_JOB_NAME: string = 'cron'
 
   protected job: schedule.Job
   protected task: TaskWrapper
+  protected dmTask: PostLoggingDM
 
   constructor (logger: Logger, youtube: Youtube) {
     super(logger)
 
     this.task = new TaskWrapper(logger, youtube)
+    this.dmTask = new PostLoggingDM(logger)
   }
 
   public async run(): Promise<void> {
@@ -36,6 +40,8 @@ export default class TaskScheduler extends Loggable {
 
     const msec = (diffDates(new Date(), date, 'milliseconds') / 1000).toFixed(2)
     CronLog.info(`Init success! (${msec} sec)`)
+
+    await this.dmTask.startLog()
   }
 
   public async stop() {
@@ -76,6 +82,12 @@ export default class TaskScheduler extends Loggable {
 
       const msec = (diffDates(new Date(), date, 'milliseconds') / 1000).toFixed(2)
       CronLog.info('[run] finish: ' + dateformat(date, 'yyyy-mm-dd HH:MM:ss') + ` (${msec} sec)`)
+
+      // ログ吐き
+      await SystemVariable.write('lastUpdate', date)
+      if (minute === 0) {
+        await this.dmTask.hourLog()
+      }
     } catch (err) {
       CronLog.error(err)
     }
