@@ -1,13 +1,13 @@
 import dateformat from 'dateformat'
 import diffDates from 'diff-dates'
-import { TwitterAPI } from '../../bootstrap';
-import config from '../../config/config';
-import { EventLog } from '../../logger/Logger';
-import Video from '../../model/Video';
-import TweetInterface from '../../interface/twitter/TweetInterface';
-import Channel from '../../model/Channel';
-import CommunityDomInterface from '../../interface/youtube/CommunityDomInterface';
-import Checker from './Checker';
+import { TwitterAPI } from '../../bootstrap'
+import config from '../../config/config'
+import { EventLog } from '../../logger/Logger'
+import Video from '../../model/Video'
+import TweetInterface from '../../interface/twitter/TweetInterface'
+import Channel from '../../model/Channel'
+import CommunityDomInterface from '../../interface/youtube/CommunityDomInterface'
+import Checker from './Checker'
 
 export default class Tweeter {
   protected isMute: boolean = false
@@ -66,6 +66,21 @@ export default class Tweeter {
   /// ////////////////////////////////////////////////////////////
   // video stream
   // メンバーは video param かどうかで判断する
+
+  public async postVideo(video: Video) {
+    const lines = [dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')]
+    if (!video.isMemberOnly) {
+      lines.push('🌾「📼 動画投稿したよ」')
+      lines.push(this.stringEscape(video.title || '-タイトル不明-', 80))
+      lines.push('⏰: ' + this.timeString(video.publishedAt))
+      lines.push(video.url('-URL不明-'))
+    } else {
+      lines.push('🌾「📼 メンバー限定の投稿があったよ！」')
+      lines.push(video.channelUrl('community' ,'-URL不明-'))
+    }
+
+    return await this.tweet(lines.join('\n'))
+  }
 
   public async scheduleStreaming(video: Video) {
     const lines = [dateformat(new Date(), 'yyyy-mm-dd HH:MM:ss')]

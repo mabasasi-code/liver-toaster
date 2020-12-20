@@ -1,63 +1,21 @@
-import os from 'os'
 import log4js from 'log4js'
-import dateformat from 'dateformat'
-import chalk from 'chalk'
+
+const originLayout = require('./originLayout.js').default
+const writeErrorAdapter = require('./writeErrorAdapter.js')
 
 const LOG_LEVEL = process.env.LOG_LEVEL || 'ALL' // DEBUG: TRACE or DEBUG, PRODUCTION: INFO or OFF
 const COMMON_FILENAME = process.env.NODE_ENV || 'develop'
 
 const MEGABYTE = 1024 * 1024
 
-const levelColors = {
-  TRACE: { meta: 'grey', body: 'grey', trace: null },
-  DEBUG: { meta: 'green', body: 'grey', trace: null },
-  INFO: { meta: 'cyan', body: 'white', trace: null },
-  WARN: { meta: 'yellow', body: 'yellow', trace: null },
-  ERROR: { meta: 'red', body: 'red', trace: 'white' },
-  FATAL: { meta: 'magenta', body: 'magenta', trace: 'white' }
-}
-
-const coloring = function (color: string, text: string) {
-  if (color) {
-    return chalk[color](text)
-  }
-  return text
-}
-
-log4js.addLayout('origin', function({ addColor }) {
-  return function (e: log4js.LoggingEvent) {
-    const date = new Date(e.startTime)
-    const level = e.level.levelStr.toUpperCase() // 大文字
-    const hasCallStack = e.hasOwnProperty('callStack') // callStack を持っているか
-
-    const dateStr = dateformat(date, 'yyyy-MM-dd HH:MM:ss.l')
-    const message = e.data.join(' ') // データはスペース区切り
-    const levelStr = level.padEnd(5).slice(0, 5) // 5文字
-    const color = levelColors[level]
-
-    // メタ情報
-    const meta = `${levelStr} ${dateStr} [${e.categoryName}]`
-    const prefix = addColor ? coloring(color.meta, meta) : meta
-
-    // ログ本体
-    const body = addColor ? coloring(color.body, message) : message
-
-    // スタックトレース
-    let suffix = ''
-    if (hasCallStack && color.trace) {
-      // @ts-ignore
-      const callStack = e.callStack
-      suffix += os.EOL
-      suffix += addColor ? coloring(color.trace, callStack) : callStack
-    }
-
-    return `${prefix} ${body}${suffix}`
-  }
-})
+log4js.addLayout('origin', originLayout)
 
 log4js.configure({
   appenders: {
-    out: { type: 'stdout', layout: { type: 'origin', addColor: true } },
+    out: {
+      type: 'stdout',
+      layout: { type: 'origin', addColor: true }
+    },
     logFile: {
       type: 'file',
       filename: `storage/logs/${COMMON_FILENAME}.log`,
@@ -66,7 +24,7 @@ log4js.configure({
       daysToKeep: 5,
       backups: 1,
       keepFileExt: true,
-      layout: { type: 'origin', addColor: false },
+      layout: { type: 'origin' },
     },
     errFile: {
       type: 'file',
@@ -74,7 +32,7 @@ log4js.configure({
       maxLogSize: MEGABYTE,
       backups: 1,
       keepFileExt: true,
-      layout: { type: 'origin', addColor: false },
+      layout: { type: 'origin' },
     },
     recordFile: {
       type: 'file',
@@ -82,25 +40,32 @@ log4js.configure({
       maxLogSize: MEGABYTE,
       backups: 1,
       keepFileExt: true,
-      layout: { type: 'origin', addColor: false },
+      layout: { type: 'origin' },
     },
-    log: { type: 'logLevelFilter', appender: 'logFile', level: LOG_LEVEL }, // レベルを default と揃える
-    err: { type: 'logLevelFilter', appender: 'errFile', level: 'warn' },
+    writeDB: {
+      type: writeErrorAdapter,
+      layout: { type: 'origin', disableCallstack: true },
+    },
+
+    logFilter: { type: 'logLevelFilter', appender: 'logFile', level: 'all' },
+    errFilter: { type: 'logLevelFilter', appender: 'errFile', level: 'warn' },
+    stackFilter: { type: 'logLevelFilter', appender: 'writeDB', level: 'warn' },
   },
+
   categories: {
     default: { appenders: ['out'], level: LOG_LEVEL, enableCallStack: true },
 
-    cli: { appenders: ['out', 'log', 'err'], level: LOG_LEVEL, enableCallStack: true },
-    notify: { appenders: ['out', 'log', 'err'], level: LOG_LEVEL, enableCallStack: true },
-    cron: { appenders: ['out', 'log', 'err'], level: LOG_LEVEL, enableCallStack: true },
-    event: { appenders: ['out', 'log', 'err'], level: LOG_LEVEL, enableCallStack: true },
+    cli: { appenders: ['out', 'logFilter', 'errFilter', 'stackFilter'], level: 'all', enableCallStack: true },
+    notify: { appenders: ['out', 'logFilter', 'errFilter', 'stackFilter'], level: 'all', enableCallStack: true },
+    cron: { appenders: ['out', 'logFilter', 'errFilter', 'stackFilter'], level: 'all', enableCallStack: true },
+    event: { appenders: ['out', 'logFilter', 'errFilter', 'stackFilter'], level: 'all', enableCallStack: true },
 
     record: { appenders: ['recordFile'], level: 'ALL', enableCallStack: true },
   }
 })
 
 export default log4js
-export const Log = log4js.getLogger()
+export const Log = log4js.getLogger() // 記録されないログ
 
 export const CliLog = log4js.getLogger('cli') // コマンド系
 export const NotifyLog =log4js.getLogger('notify') // 通知からの処理
