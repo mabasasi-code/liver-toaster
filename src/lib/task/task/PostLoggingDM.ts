@@ -20,10 +20,11 @@ export default class PostLoggingDM extends Loggable {
 
     try {
       // DM 組み立て
-      const chLen = await Channel.count({})
       const lines = [dateformat(date, 'yyyy-mm-dd HH:MM:ss')]
       lines.push('プログラムが起動しました。')
       lines.push('環境:' + config.env)
+
+      const chLen = await Channel.count({})
       lines.push('対象チャンネル数:' + chLen)
 
       // 送信
@@ -51,6 +52,9 @@ export default class PostLoggingDM extends Loggable {
       lines.push(dateformat(date, 'mm/dd HH') + '時のログレポート')
 
       lines.push('')
+
+      const chLen = await Channel.count({})
+      lines.push('対象チャンネル数:' + chLen)
 
       const last = system.lastUpdate ? dateformat(system.lastUpdate, 'yyyy-mm-dd HH:MM:ss') : '実行されていません'
       const diff = system.lastUpdate ? diffDates(date, system.lastUpdate, 'minutes') : '--'
