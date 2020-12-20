@@ -40,8 +40,11 @@ export default class CheckChannelCommunityTask extends Loggable {
     const post = text
       ? await this.youtubeCommunityScraper.findPost(text, channelId, loadCookie)
       : await this.youtubeCommunityScraper.getPostFirst(channelId, loadCookie)
+
+    // 空ならスキップ (エラーの場合は上部で例外を吐く)
     if (!post) {
-      throw new Error('Web scrape failure')
+      this.logger.debug(`> no community posts`)
+      return
     }
 
     const postId = post.postId

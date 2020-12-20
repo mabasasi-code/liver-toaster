@@ -48,13 +48,18 @@ export default class YoutubeCommunityScraper {
 
   protected searchPosts(doc: HTMLElement): CommunityDomInterface[] {
     const json = this.searchInitialData(doc)
-    if (!json) return []
+    if (!json) {
+      throw new Error('Web scrape failure (initial data is not found)')
+    }
 
     const tabs = get(json, 'contents.twoColumnBrowseResultsRenderer.tabs', [])
     const communityTab = tabs.find(e => {
       return get(e, 'tabRenderer.endpoint.commandMetadata.webCommandMetadata.url', '')
       .includes('community')
     })
+    if (!communityTab) {
+      throw new Error('Web scrape failure (community tab is not found)')
+    }
 
     const threads = get(communityTab, 'tabRenderer.content.sectionListRenderer.contents.0.itemSectionRenderer.contents', [])
     const posts: CommunityDomInterface[] = threads.map(e => get(e, 'backstagePostThreadRenderer.post.backstagePostRenderer'))
