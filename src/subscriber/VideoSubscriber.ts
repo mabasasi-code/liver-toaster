@@ -45,6 +45,16 @@ export default class VideoSubscriber implements EntitySubscriberInterface<Video>
   ///
 
   public static async videoNotify(video: Video) {
+    // 動画っぽいなら、動画ツイをする (終了ツイ扱い)
+    if (!video.scheduledStartTime && !video.actualStartTime) {
+      EventLog.debug(`> [${video.videoId}] video (tweet: ${Boolean(video.endTweetId)})`)
+      if (!video.endTweetId) {
+        const tweet = await Tweeter.builder().postVideo(video)
+        video.endTweetId = tweet.id_str
+      }
+      return
+    }
+
     // 配信が始まってなくて、予定ツイをしてなさそうならする
     if (!video.actualStartTime && !video.actualEndTime) {
       EventLog.debug(`> [${video.videoId}] schedule stream (tweet: ${Boolean(video.scheduleTweetId)})`)
