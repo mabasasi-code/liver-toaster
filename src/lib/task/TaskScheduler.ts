@@ -6,7 +6,7 @@ import TaskWrapper from './TaskWrapper'
 import Loggable from '../util/Loggable'
 import { Logger } from 'log4js'
 import Youtube from '../api/Youtube'
-import PostLoggingDM from './task/postLoggingDM'
+import PostLoggingDM from './task/PostLoggingDM'
 import SystemVariable from '../SystemVariable'
 
 export default class TaskScheduler extends Loggable {
